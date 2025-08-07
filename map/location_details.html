@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Campus Location</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+	<script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="/images/apple-touch-icon.png">
+	<link rel="manifest" href="manifest.json">
+	<meta name="mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+	<script src="/fa2.js" crossorigin="anonymous"></script>
+	<!-- Import Vue.js -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/darkreader@4.9.58/darkreader.min.js"></script>
+	<style>
+		.card-header {
+		    background-color: rgb(0, 61, 165);
+		    color: white;
+		}
+		.progress-bar {
+		    background-color: rgb(0, 61, 165);
+		}
+		.row-pad {
+		    padding-bottom: 25px;
+		}
+		.parent { display: -ms-flex; display: -webkit-flex; display: flex; }
+		.parent>div { flex:1; }
+		
+		.row {
+		    margin-right: unset !important;
+		    margin-left: unset !important;
+		}
+		
+		.container, .container-fluid, .container-lg, .container-md, .container-sm, .container-xl, .container-xxl {
+		    padding-right: unset !important;
+		    padding-left: unset !important;
+		}
+		[v-cloak] {
+		  display:none;
+		}
+		
+		html, body {
+		  overscroll-behavior-y: none;
+		}
+	</style>
+</head>
+  <body>
+    <div id="app">
+
+            <br/>
+         
+         
+<div id="lots" class="container-fluid row justify-content-center" v-cloak>
+    <template v-for="loc in resultQuery">
+        <div v-if="loc[2]" class="col-xs-12 col-sm-6 col-md-4 col-lg-3 p-3">
+            <div class="card shadow-lg rounded-3 border-0">
+                
+                <!-- Image at the top -->
+                <img v-if="loc[3]" :src="loc[3]" class="card-img-top rounded-top" loading="lazy">
+                <img v-else 
+                     :src="'https://api.mapbox.com/styles/v1/jassmith87/cjyhqzqit14fs1cmjwogd33l2/static/url-https%3A%2F%2Fres.cloudinary.com%2Fglide%2Fimage%2Fupload%2Fv1572388650%2Fglidehq%2Fglide-pin.png(' + loc[100] + ')/' + loc[100] + ',15,0,0/319x300@2x?access_token=pk.eyJ1IjoiamFzc21pdGg4NyIsImEiOiJjanllMWE0Y2owc2k3M2RvY3o3MXlxbDZxIn0.EQJsvDixbUz2naDzTIfE6Q'"
+                     class="card-img-top rounded-top" loading="lazy">
+                
+                <div class="card-body text-center">
+                    <!-- Location Name -->
+                    <h5 class="fw-bold">
+                        <i class="bi bi-geo-alt-fill text-danger"></i> {{ loc[0] }}
+                    </h5>
+                    <small class="text-muted">{{ loc[8] }}</small>
+                    <hr/>
+
+                    
+
+                    <!-- Circular Buttons for Directions & Share -->
+<div class="d-flex justify-content-around align-items-center mt-3">
+    <div class="d-flex flex-column align-items-center">
+        <a :href="'https://maps.apple.com/?ll=' + loc[2] + '&q=' + loc[0]" target="_blank"
+           class="btn btn-primary shadow-sm rounded-circle d-flex justify-content-center align-items-center"
+           style="width: 45px; height: 45px;">
+            <i class="fa-brands fa-apple fa-lg text-white"></i>
+        </a>
+        <span class="small mt-1 text-primary text-center">Apple Maps</span>
+    </div>
+    
+    <div class="d-flex flex-column align-items-center">
+        <a :href="'https://www.google.com/maps/dir/?api=1&destination=' + loc[2]" target="_blank"
+           class="btn btn-primary shadow-sm rounded-circle d-flex justify-content-center align-items-center"
+           style="width: 45px; height: 45px;">
+            <i class="fa-brands fa-google fa-lg text-white"></i>
+        </a>
+        <span class="small mt-1 text-primary text-center">Google Maps</span>
+    </div>
+    
+    <div v-if="loc[9]" class="d-flex flex-column align-items-center">
+        <a :href="loc[9]" target="_blank"
+           class="btn btn-primary shadow-sm rounded-circle d-flex justify-content-center align-items-center"
+           style="width: 45px; height: 45px;">
+            <i class="fa-solid fa-charging-station fa-lg text-white"></i>
+        </a>
+        <span class="small mt-1 text-primary text-center">EV Charging</span>
+    </div>
+    
+    <div v-if="loc[10]" class="d-flex flex-column align-items-center">
+        <a :href="loc[10]" target="_blank"
+           class="btn btn-primary shadow-sm rounded-circle d-flex justify-content-center align-items-center"
+           style="width: 45px; height: 45px;">
+            <i class="fa-solid fa-building fa-lg text-white"></i>
+        </a>
+        <span class="small mt-1 text-primary text-center">Floor Plan</span>
+    </div>
+    
+    <div v-if="loc[1] == 'Dinning'" class="d-flex flex-column align-items-center">
+        <a href="https://dining.ucr.edu/dining-hours" target="_blank"
+           class="btn btn-primary shadow-sm rounded-circle d-flex justify-content-center align-items-center"
+           style="width: 45px; height: 45px;">
+            <i class="fa-solid fa-clock fa-lg text-white"></i>
+        </a>
+        <span class="small mt-1 text-primary text-center">Check Hours</span>
+    </div>
+    
+    <div class="d-flex flex-column align-items-center">
+        <a href="#" :onclick="'navigator.share({ url: \'https://www.google.com/maps?q='+loc[2]+'\'})'"
+           class="btn btn-primary shadow-sm rounded-circle d-flex justify-content-center align-items-center"
+           style="width: 45px; height: 45px;">
+            <i class="fa-solid fa-share fa-lg text-white"></i>
+        </a>
+        <span class="small mt-1 text-primary text-center">Share Location</span>
+    </div>
+</div>
+
+                    <hr/>
+                    
+                    <!-- Alerts -->
+                    <div v-if="loc[4]">
+	                    <div class="alert alert-primary"><font v-for="(line,lineNumber) of loc[4].split('\n')" v-bind:key="lineNumber">{{line}}<br/></font></div>
+	                    <hr/>
+	                </div>
+                    <div v-if="loc[5]">
+	                    <div class="alert alert-secondary"><h5>Hours</h5><p v-for="(line,lineNumber) of loc[5].split('\n')" v-bind:key="lineNumber">{{line}}</p></div>
+	                <hr/>
+	                </div>
+
+                    <!-- Additional Details -->
+                    <div class="mt-4 text-start">
+                        <p><i class="bi bi-geo-fill"></i> <strong>Distance from Lot 30:</strong> {{ loc['lot30'] }} mi</p>
+                        <p><i class="bi bi-geo-fill"></i> <strong>Distance from Lot 26:</strong> {{ loc['lot26'] }} mi</p>
+                        <p><i class="bi bi-geo-fill"></i> <strong>Distance from Lot 1:</strong> {{ loc['lot1'] }} mi</p>
+                        <p><i class="bi bi-geo-fill"></i> <strong>Distance from Lot 9:</strong> {{ loc['lot9'] }} mi</p>
+                        <p><i class="bi bi-geo-fill"></i> <strong>Distance from Lot 13:</strong> {{ loc['lot13'] }} mi</p>
+                    </div>
+                    <div class="row">
+	                    <a class="btn btn-danger btn-lg btn-block" 
+						   :href="`https://forms.fillout.com/t/bwqTgEbZasus?wloc=Wrong%20Location&location_name=${loc[0]}`" 
+						   target="_blank">
+						   Report An Issue
+						</a>
+
+	                </div>
+                </div>
+            </div>
+        </div>
+    </template>
+</div>
+
+		
+		
+		
+    </div>
+
+    <!-- Import App -->
+    <script src="./location_details.js"></script>
+
+    <!-- Mount App -->
+    <script>
+    const mountedApp = app.mount('#app');
+    //dark reader
+	DarkReader.auto({
+	    brightness: 100,
+	    contrast: 100
+	});
+	
+    </script>
+    <script>
+		//swipe right detection
+document.addEventListener('swiped-right', function(e) {
+			   window.parent.$('#iframeModal').modal('hide');
+            });
+	</script>
+	<script src="/pwa/swipe.js"></script>
+  </body>
+</html>

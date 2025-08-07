@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ICS Event Viewer</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pulltorefreshjs/0.1.22/index.umd.min.js" integrity="sha512-djmgTiVR15A/7fON+ojDzFYrRsfVkzQZu07ZVb0zLC1OhA2iISP39Lzs05GqSKF0vPjkLzL5hBC+am6po7dKpA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdn.jsdelivr.net/npm/darkreader@4.9.58/darkreader.min.js"></script>
+    <style>
+	.modal.fade.modal-right .modal-dialog {
+	  transform: translate(125%, 0px);
+	}
+	
+	.modal.show.modal-right .modal-dialog {
+	  transform: none;
+	}
+	.modal-backdrop {
+	   background-color: transparent;
+	}
+	html, body {
+			overscroll-behavior-y: none;
+	}
+		
+	
+    </style>
+</head>
+<body class="bg-light">
+    <div class="container mt-5">
+        <div class="card shadow">
+            <div class="card-header text-center text-white" style="background: #003DA5">
+                <h3 class="d-flex justify-content-between align-items-center">
+                    <span>Tasks</span>
+                    <div>
+                        <button class="btn btn-light btn-sm me-2" id="refreshBtn">Update Events</button>
+                        <button class="btn btn-light btn-sm" id="changeUrlBtn" data-bs-toggle="modal" data-bs-target="#urlModal">Change ICS URL</button>
+                    </div>
+                </h3>
+            </div>
+            <div class="card-body">
+                <div id="loading" class="text-center" style="display: none;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+                <div id="events" class="mt-4">
+                    <h5 class="text-center text-muted">No events loaded yet.</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for entering or updating ICS URL -->
+    <div class="modal fade" id="urlModal" tabindex="-1" aria-labelledby="urlModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="urlModalLabel">Enter ICS URL</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="urlForm">
+                        <div class="mb-3">
+                            <label for="icsUrlInput" class="form-label">ICS URL:</label>
+                            <input type="url" class="form-control" id="icsUrlInput" placeholder="https://elearn.ucr.edu/user_.ics" required>
+                        </div>
+                        <div id="urlLoading" class="text-center" style="display: none;">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                        <div class="text-danger" id="urlError" style="display: none;">Failed to load data from the provided URL. Please check and try again.<br/><br/></div>
+                        <button type="submit" class="btn btn-primary">Save URL</button>
+                    </form>
+<!-- Foldable User Guide Section -->
+        <div class="accordion mt-4" id="accordionExample">
+            <div class="card">
+                <div class="card-header" id="headingOne">
+                    <h2 class="mb-0">
+                            How To Use?
+                    </h2>
+                </div>
+
+<div id="userGuide" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
+                    <div class="card-body">
+	                    <ol>
+		                <li>Head To [<a href="https://elearn.ucr.edu/calendar" target="_blank">Elearn Calendar</a> -> Scroll All The Way Down], Find <img src="images/icsevent/calendarfeed.jpg" style="width: 100%">.</li>
+		                <li>Choose <b>SELECT ALL</b><img src="images/icsevent/selectall.jpg" style="width: 100%"></li>
+                        <li>Paste the link on top and click save URL</li>
+	                    <li><b>PRIVACY NOTICE</b></li>
+	                    <ul>
+		                    <li>Your Canvas events schedule information is proxied over our Cloudflare worker endpoint due to Canvas restriction on <a href="https://www.youtube.com/watch?v=4KHiSt0oLJ0" target="_blank"> CORS</a>.</li>
+		                    <li>In order to not save any information on our server nor endpoints, we have to use this proxy to access your ICS calendar but no data is saved on our server nor at the worker endpoint.</li>
+		                    <li>Your ICS URL and calendar is only saved in your local device in your cookie and local storage, we do not save your ICS url and calendar information anywhere on our end.</li>
+		                    <li>If you do not feel comfortable using this service please stop using this service.</li>
+	                    </ul>
+	                    </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for event details -->
+<div class="modal fade modal-right" id="eventModal" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content">
+	        
+	        
+<div class="modal-header bg-secondary text-white d-flex align-items-center position-relative" style="background-color: rgb(0, 61, 165); border-bottom: 0px;padding: 0.3rem 0.2rem;">
+    <button type="button" class="btn text-white fs-4 position-absolute start-0" data-bs-dismiss="modal" aria-label="Close">
+        &#x2190;
+    </button>
+    <div class="w-100 text-center">
+        <h6 class="modal-title fw-bold mb-0">Assignment Details</h6>
+        <p class="small mb-0" id="courseFullID">COURSE FULL ID</p>
+    </div>
+</div>
+
+
+            <div class="modal-body" id="modalBody">
+                <!-- Event details go here -->
+            </div>
+            <!-- Sticky bottom bar -->
+            <div class="modal-footer position-fixed bottom-0 start-0 w-100 p-1 shadow" style="background: #EBAF3D">
+                <a id="canvasLink" href="#" target="_blank" class="btn w-100" style="color: #FFFFFF">
+                    Visit on Canvas
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <script>
+function formatDate(icsDate) {
+    let date;
+    if (icsDate.includes("T")) {
+        const year = parseInt(icsDate.substring(0, 4));
+        const month = parseInt(icsDate.substring(4, 6)) - 1;
+        const day = parseInt(icsDate.substring(6, 8));
+        const hours = parseInt(icsDate.substring(9, 11));
+        const minutes = parseInt(icsDate.substring(11, 13));
+        date = new Date(Date.UTC(year, month, day, hours, minutes)); // Convert UTC time
+    } else {
+        const year = parseInt(icsDate.substring(0, 4));
+        const month = parseInt(icsDate.substring(4, 6)) - 1;
+        const day = parseInt(icsDate.substring(6, 8));
+        date = new Date(year, month, day, 23, 59); // Default time: 11:59 PM local
+    }
+
+    // Convert to Pacific Time (PST/PDT)
+    return new Date(date.toLocaleString("en-US", { timeZone: "America/Los_Angeles" }));
+}
+
+
+
+
+function getDateCategory(eventDate) {
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+    // Calculate the end of the current week (Sunday)
+    const endOfWeek = new Date(today);
+    endOfWeek.setDate(today.getDate() + (7 - today.getDay()) % 7); // Ensure Sunday as last day of week
+    endOfWeek.setHours(23, 59, 59, 999); // Set to end of day
+
+    if (eventDate < today) {
+        return "past";
+    } else if (eventDate.toDateString() === today.toDateString()) {
+        return "today";
+    } else if (eventDate > today && eventDate <= endOfWeek) {
+        return "thisWeek";
+    } else {
+        return "later";
+    }
+}
+
+
+function formatDueDate(eventDate, category) {
+    const options = { hour: '2-digit', minute: '2-digit', hour12: true, timeZone: "America/Los_Angeles" };
+    const time = ` at ${eventDate.toLocaleTimeString("en-US", options)}`;
+
+    if (category === "today") {
+        return `Today${time}`;
+    } else if (category === "thisWeek") {
+        //return `${eventDate.toLocaleDateString("en-US", { weekday: "long", timeZone: "America/Los_Angeles" })}${time}`;
+        return `${eventDate.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric", timeZone: "America/Los_Angeles" })}, ${time}`;
+
+    } else {
+        //return `${eventDate.toLocaleDateString("en-US", { timeZone: "America/Los_Angeles" })}${time}`;
+        return `${eventDate.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric",  timeZone: "America/Los_Angeles" })}, ${time}`;
+
+    }
+}
+
+function formatDueDate2(eventDate, category) {
+    const options = { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: "America/Los_Angeles" };
+    const time = ` at ${eventDate.toLocaleTimeString("en-US", options)}`;
+
+    return `${eventDate.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "America/Los_Angeles" })}${time}`;
+}
+
+
+
+
+        async function parseICS(url) {
+            try {
+                const response = await fetch(url);
+                const data = await response.text();
+
+                const events = [];
+                const eventRegex = /BEGIN:VEVENT([\s\S]*?)END:VEVENT/g;
+                let match;
+
+                while ((match = eventRegex.exec(data)) !== null) {
+                    const event = {};
+                    let lines = match[1].split(/\r?\n/);
+                    let previousKey = null;
+
+                    lines.forEach(line => {
+                        if (line.startsWith(" ") || line.startsWith("\t")) {
+                            if (previousKey) {
+                                event[previousKey] += "" + line.trim();
+                            }
+                        } else {
+                            const [key, ...valueParts] = line.split(":");
+                            if (key && valueParts.length > 0) {
+                                const value = valueParts.join(":").trim();
+                                const cleanKey = key.includes(";") ? key.split(";")[0] : key;
+                                event[cleanKey] = value;
+                                previousKey = cleanKey;
+                            }
+                        }
+                    });
+
+                    events.push(event);
+                }
+
+                const lastUpdated = new Date();
+                localStorage.setItem("icsData", JSON.stringify(events));
+                localStorage.setItem("icsLastUpdated", lastUpdated.toISOString());
+
+                return events;
+            } catch (error) {
+                console.error("Error fetching ICS:", error);
+                return [];
+            }
+        }
+
+function cleanTitle(summary) {
+    return summary
+        .replace(/\\(.)/g, "$1")  // Remove escape characters (e.g., `\,` → `,`, `\n` → `n`)
+        .replace(/\[.*?\]/g, "")   // Remove text inside square brackets
+        .trim();                   // Trim extra spaces
+}
+
+
+        function loadEventsFromCache() {
+            const cachedEvents = localStorage.getItem("icsData");
+            const lastUpdated = localStorage.getItem("icsLastUpdated");
+
+            if (cachedEvents && lastUpdated) {
+                const lastUpdatedDate = new Date(lastUpdated);
+                const now = new Date();
+                const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+                if (lastUpdatedDate < todayMidnight) {
+                    return null; // Force refresh if last update was before midnight
+                }
+
+                return JSON.parse(cachedEvents);
+            }
+
+            return null;
+        }
+        
+function getColorForCourse(courseName) {
+    let hash = 0;
+    for (let i = 0; i < courseName.length; i++) {
+        hash = courseName.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const hue = Math.abs(hash % 360); // Ensure hue spans 360 degrees
+    const saturation = 80; // Higher saturation for vivid colors
+    const lightness = 35 + Math.abs(hash % 20); // Vary lightness slightly (35%-55%)
+
+    return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+}
+
+
+
+        function renderEvents(events) {
+            const eventsDiv = document.getElementById("events");
+            eventsDiv.innerHTML = "";
+
+            if (events.length === 0) {
+                eventsDiv.innerHTML = '<h5 class="text-center text-muted">No events found or failed to load.</h5>';
+                return;
+            }
+
+            const todayList = document.createElement("ul");
+            const weekList = document.createElement("ul");
+            const laterList = document.createElement("ul");
+            todayList.className = weekList.className = laterList.className = "list-group mb-4";
+
+            const todayHeader = document.createElement("h5");
+            todayHeader.textContent = "Due Today";
+            const weekHeader = document.createElement("h5");
+            weekHeader.textContent = "Due This Week";
+            const laterHeader = document.createElement("h5");
+            laterHeader.textContent = "Due Later";
+
+            events.forEach(event => {
+                const eventDate = event.DTSTART ? formatDate(event.DTSTART) : null;
+                if (!eventDate) return;
+
+                const category = getDateCategory(eventDate);
+                if (category === "past") return;
+
+                const dueDate = formatDueDate(eventDate, category);
+                const dueDate2 = formatDueDate2(eventDate, category);
+                
+                const cleanEventTitle = cleanTitle(event.SUMMARY || "No Title");
+                /*const formattedDescription = (event.DESCRIPTION || "No Detail Available")
+			    .replace(/\\n/g, "<br>")  // Convert line breaks
+			    .replace(/\\,/g, ",")     // Fix escaped commas
+			    .replace(/\\;/g, ";")     // Fix escaped semicolons
+			    .replace(/\\\\/g, "\\")   // Fix double backslashes
+			    .replace(/\[(.*?)\]\s*\((.*?)\)/g, '<a href="$2" target="_blank">$1</a>'); // Convert markdown links*/
+const formattedDescription = marked.parse(
+    (event.DESCRIPTION || "No Detail Available")
+        .replace(/\\n/g, "\n")  // Convert escaped newlines to actual newlines for Markdown
+        .replace(/\\,/g, ",")   // Fix escaped commas
+        .replace(/\\;/g, ";")   // Fix escaped semicolons
+        .replace(/\\\\/g, "\\") // Fix double backslashes
+        .replace(/\[(.*?)\]\s*\((.*?)\)/g, '<a href="$2" target="_blank">$1</a>')
+);
+
+
+
+                const item = document.createElement("li");
+                const courseCode = event.SUMMARY?.match(/\[(.*?)\]/)?.[1]?.replace(/^([A-Z]+)_(\d{3}[A-Z]?)_(\d{3}).*$/, '$1 $2-$3') || "Unknown";
+                const courseColor = getColorForCourse(courseCode);
+                item.className = "list-group-item";
+                item.innerHTML = `
+                				  <span class="badge rounded" style="background:${courseColor}">${courseCode}</span><br/>
+                				  <strong>${cleanEventTitle}</strong><br>
+                                  <small>Due ${dueDate}</small>`;
+                item.style.cursor = "pointer";
+                item.onclick = () => {
+	                //document.getElementById("eventModalLabel").innerHTML = `${cleanEventTitle}`;
+	                document.getElementById("courseFullID").innerHTML = `${courseCode}`;
+                    document.getElementById("modalBody").innerHTML = `
+                   		<h5>${cleanEventTitle}</h5><hr/>
+                        <small style="color:gray;">Course</small><br/>${courseCode}<br><hr/>
+                        <small style="color:gray;">Due</small><br/>${dueDate2}<br><hr/>
+                        
+                        <small style="color:gray;">Description</small><br/>${formattedDescription}<br/><br/>`;
+                        
+                    document.getElementById("canvasLink").href = event.URL.replace(
+					  /.*course_(\d+).*assignment_(\d+)/,
+					  "https://elearn.ucr.edu/courses/$1/assignments/$2"
+					);
+
+                    new bootstrap.Modal(document.getElementById("eventModal")).show();
+                };
+                if (category === "today") todayList.appendChild(item);
+                else if (category === "thisWeek") weekList.appendChild(item);
+                else laterList.appendChild(item);
+            });
+
+            if (todayList.childElementCount > 0) eventsDiv.appendChild(todayHeader), eventsDiv.appendChild(todayList);
+            if (weekList.childElementCount > 0) eventsDiv.appendChild(weekHeader), eventsDiv.appendChild(weekList);
+            if (laterList.childElementCount > 0) eventsDiv.appendChild(laterHeader), eventsDiv.appendChild(laterList);
+        }
+
+        function loadEventsFromICS() {
+            const url = getCookie("icsUrl");
+            if (!url) {
+                new bootstrap.Modal(document.getElementById("urlModal")).show();
+                return;
+            }
+
+            document.getElementById("loading").style.display = "block";
+            parseICS(url).then(events => {
+                document.getElementById("loading").style.display = "none";
+                renderEvents(events);
+            });
+        }
+
+        function setCookie(name, value, days) {
+            const date = new Date();
+            date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+            document.cookie = `${name}=${value};expires=${date.toUTCString()};path=/`;
+        }
+
+        function getCookie(name) {
+            const cookies = document.cookie.split("; ");
+            for (let i = 0; i < cookies.length; i++) {
+                const [key, value] = cookies[i].split("=");
+                if (key === name) return value;
+            }
+            return null;
+        }
+
+        document.getElementById("urlForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            var url = document.getElementById("icsUrlInput").value;
+            
+            url = url.replace(/^.*\/([^\/]+\.ics)$/, "https://elearncors.workercluster.workers.dev/$1");
+
+            document.getElementById("urlLoading").style.display = "block";
+            document.getElementById("urlError").style.display = "none";
+
+            const events = await parseICS(url);
+
+            document.getElementById("urlLoading").style.display = "none";
+
+            if (events.length === 0) {
+                document.getElementById("urlError").style.display = "block";
+                return;
+            }
+
+            setCookie("icsUrl", url, 30);
+            const modal = bootstrap.Modal.getInstance(document.getElementById("urlModal"));
+            if (modal) modal.hide();
+            renderEvents(events);
+        });
+
+        document.getElementById("refreshBtn").addEventListener("click", () => {
+            loadEventsFromICS();
+        });
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const cachedEvents = loadEventsFromCache();
+            if (cachedEvents) {
+                renderEvents(cachedEvents);
+            } else {
+                loadEventsFromICS();
+            }
+        });
+        
+    </script>
+    <script>
+		//swipe right detection
+document.addEventListener('swiped-right', function(e) {
+			   $('#eventModal').modal('hide');
+            });
+            
+            
+const ptr = PullToRefresh.init({
+  mainElement: 'body',
+  shouldPullToRefresh: () => 
+    document.querySelector('.modal.show') === null && window.scrollY === 0,
+  onRefresh() {
+    window.location.reload();
+  }
+});
+
+
+DarkReader.auto({
+	    brightness: 100,
+	    contrast: 100
+	});
+	</script>
+	<script src="/pwa/swipe.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</body>
+</html>

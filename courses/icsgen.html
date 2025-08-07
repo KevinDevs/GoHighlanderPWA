@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Parse ICS File</title>
+    <script src="gzip.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.0.4/pako.min.js" integrity="sha512-EAKzSKex+PXC0U9OG13r1059ysjrjkJEpZoONCnZa0mBROY28iBOOxZSErUVw1LzLr2+U5PhR7zPCPKidUVJqg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.10/dist/clipboard.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  </head>
+  <body>
+	<h3>Head to <a href="https://registrationssb.ucr.edu/StudentRegistrationSsb/ssb/registrationHistory/registrationHistory" target="_blank">My Schedule</a> From UCR Registration and Click Email Schedule, Choose Your Term, Download the .ics File From Your E-mail Attachment Then Upload It Here!</h3>
+	<h4>DO NOT CHANGE THE NAME OF THE ICS, DUPLICATE FILES LIKE "Fall 2022 (1).ics" ARE OK</h4>
+	<h4>We do not upload your file to our server, everything is processed locally on your browser. Only requests made to remote server are to lookup course information to generate course code.</h4>
+    <input type="file" id="fileInput" accept=".ics"/>
+    <br/><br/>
+	<div id="eventContainer" style="display:none">Loading...<br/><br/><b>Your Courses:</b><br/></div>
+	<br/>
+	<button class="btn btn-primary btn-lg btn-block" id="copyButton" onclick="copyText();" data-clipboard-text="" style="display:none">Copy Course Code</button>
+
+
+    <script>
+	    new ClipboardJS('.btn');
+	    
+		var rTermCode;
+		var termName;
+		var coursesObj;
+		var addCourseObj = [];
+		var coursesData = [];
+		var totalCourses;
+		var currCourses = 0;
+			     
+		document.getElementById("fileInput").addEventListener("change", function () {
+		  let file = this.files[0];
+		  termName = file.name.substring(0, file.name.lastIndexOf(".")).replace(/\s*\([^)]*\)\s*/g, "");
+		  //console.log(termName);
+		  findTermCode(termName)
+		    .then(termCode => {
+		      rTermCode = termCode;
+		      let reader = new FileReader();
+		      reader.readAsText(file);
+		      reader.onload = function () {
+		        let events = parseIcsFile(reader.result);
+		        let eventContainer = document.getElementById("eventContainer");
+		        totalCourses = events.length;
+		        events.forEach(function (event) {
+		          let eventDiv = document.createElement("div");
+		          var summary = event.SUMMARY;
+				  //var courseParse = summary.match(/([A-Z]{2,})\s(\d{3}[A-Z]?)\s(\d+)/);
+				  var courseParse = summary.split(" ").slice(-3);
+				  courseParse[2] = courseParse[2].replace('\r','');
+				  //console.log(courseParse);
+				  addCourse(courseParse[0], courseParse[1], courseParse[2], rTermCode);
+				  document.getElementById("eventContainer").style.display = "";
+		          eventDiv.innerHTML = courseParse[0] + courseParse[1] + " " +courseParse[2];
+		          eventContainer.appendChild(eventDiv);
+		        });
+		        
+		      };
+		    });
+		});
+		
+		
+		
+		
+	function addCourse(subj, course, section) {
+	    fetch('https://ucrapi.justinf.dev/api/v1/'+rTermCode+'/'+subj+'.json')
+	        .then(response => response.json())
+	        .then(data => {
+	            coursesObj = data.data;
+	            for (let i = 0; i < coursesObj.length; i++) {
+	                if (coursesObj[i].subjectCourse == subj+course && coursesObj[i].sequenceNumber == section) {
+	                    let courseSection = coursesObj[i];
+	                    addCourseObj.push(courseSection);
+						currCourses++;
+			            //console.log(currCourses);
+				        if(currCourses == totalCourses){
+					        genJson();
+					        //console.log("success");
+					        document.getElementById("copyButton").style.display = "";
+					        document.getElementById("eventContainer").style.display = "none";
+				        }
+	                    return;
+	                }
+	            }
+	        });
+	    }
+	    var ran = false;
+	    
+	    function genJson(){
+		    if(ran){return;}
+		    //console.log(currCourses + currCourses);
+		    addCourseObj.forEach(function(currCourse) {
+				var courseNumber = currCourse['subject'] + currCourse['courseNumber'];
+				var secNumber = currCourse['sequenceNumber'];
+				var courseTitle = courseNumber + " - " + secNumber;
+				var description = currCourse['courseTitle'];
+				var faculty = currCourse['faculty'];
+				var building = currCourse['meetingsFaculty'][0]['meetingTime']['buildingDescription']
+				var room = currCourse['meetingsFaculty'][0]['meetingTime']['room']
+				var type = currCourse['scheduleTypeDescription']
+				var sTime = currCourse['meetingsFaculty'][0]['meetingTime']['beginTime']
+				var eTime = currCourse['meetingsFaculty'][0]['meetingTime']['endTime']
+				var sDate = currCourse['meetingsFaculty'][0]['meetingTime']['startDate']
+				var eDate = currCourse['meetingsFaculty'][0]['meetingTime']['endDate']
+				var m = currCourse['meetingsFaculty'][0]['meetingTime']['monday']
+				var t = currCourse['meetingsFaculty'][0]['meetingTime']['tuesday']
+				var w = currCourse['meetingsFaculty'][0]['meetingTime']['wednesday']
+				var th = currCourse['meetingsFaculty'][0]['meetingTime']['thursday']
+				var f = currCourse['meetingsFaculty'][0]['meetingTime']['friday']
+				var mStyle = "bg-primary";
+				var tStyle = "bg-primary";
+				var wStyle = "bg-primary";
+				var thStyle = "bg-primary";
+				var wStyle = "bg-primary";
+				var fStyle = "bg-primary";
+				if (!m) {
+				    mStyle = "bg-secondary";
+				}
+				if (!t) {
+				    tStyle = "bg-secondary";
+				}
+				if (!w) {
+				    wStyle = "bg-secondary";
+				}
+				if (!th) {
+				    thStyle = "bg-secondary";
+				}
+				if (!f) {
+				    fStyle = "bg-secondary";
+				}
+				var facultyNames = "";
+				for (var j = 0; j < faculty.length; j++) {
+				    var facEmail = faculty[j]['emailAddress'];
+				    var name = faculty[j]['displayName'];
+				    var primary = faculty[j]['primaryIndicator'];
+				    var primaryName = "";
+				    if (primary) {
+				        primaryName = "Primary ";
+				    }
+				    if (faculty.length == 1) {
+				        facultyNames += primaryName + "Instructor: <a href='mailto:" + facEmail + "'> " + name + "</a>";
+				    } else {
+				        facultyNames += primaryName + "Instructor: <a href='mailto:" + facEmail + "'> " + name + "</a>" + "<br/> ";
+				    }
+				
+				    if (j == faculty.length) {
+				        facultyNames += primaryName + "Instructor: <a href='mailto:" + facEmail + "'> " + name + "</a>";
+				    }
+				}
+				if (type == "Lecture") {
+				    color = "rgb(0, 61, 165)";
+				} else {
+				    color = "rgb(62 91 141)";
+				}
+				var courseData = {
+				    course: {}
+				};
+				courseData.course["color"] = color;
+				courseData.course["description"] = description;
+				courseData.course["courseTitle"] = courseTitle;
+				courseData.course["building"] = building;
+				courseData.course["room"] = room;
+				courseData.course["type"] = type;
+				courseData.course["facultyNames"] = facultyNames;
+				courseData.course["m"] = m;
+				courseData.course["t"] = t;
+				courseData.course["w"] = w;
+				courseData.course["th"] = th;
+				courseData.course["f"] = f;
+				courseData.course["sTime"] = sTime;
+				courseData.course["eTime"] = eTime;
+				courseData.course["sDate"] = sDate;
+				courseData.course["eDate"] = eDate;
+				courseData.course["courseNumber"] = courseNumber;
+				courseData.course["secNumber"] = secNumber;
+				courseData.course["bdst"] = currCourse['meetingsFaculty'][0]['meetingTime']['building'];
+				courseData.course["term"] = termName;
+				coursesData.push(courseData);
+			});
+			var ctext = JSON.stringify(coursesData);
+			ctext = textToGzip(ctext)
+			document.getElementById("copyButton").setAttribute("data-clipboard-text", ctext);
+			//console.log(ctext);
+			ran = true;
+	    }
+	    
+	    function genGzipped(){
+		    
+	    }
+		
+		
+		function findTermCode(termName){
+		  return fetch("https://ucrapi.justinf.dev/api/v1/terms.json")
+		    .then(response => response.json())
+		    .then(data => {
+		      let terms = data;
+		      for (let i = 0; i < terms.length; i++) {
+		        if (terms[i].description.replace(' (View Only)','') == termName) {
+			        console.log(Promise.resolve(terms[i].code));
+		          return Promise.resolve(terms[i].code);
+		        }
+		      }
+		      Swal.fire({
+		        icon: 'warning',
+		        title: 'Could not parse term code',
+		        text: "Please check if your file name is correct.",
+		        showConfirmButton: true
+		    });
+		    });
+		}
+
+		
+		function parseIcsFile(fileContent) {
+		  let lines = fileContent.split("\n");
+		  let events = [];
+		  let currentEvent = null;
+		  for (let i = 0; i < lines.length; i++) {
+		    let line = lines[i];
+		    if (line.startsWith("BEGIN:VEVENT")) {
+		      currentEvent = {};
+		    } else if (line.startsWith("END:VEVENT")) {
+		      events.push(currentEvent);
+		      currentEvent = null;
+		    } else if (currentEvent) {
+		      let parts = line.split(":");
+		      let key = parts[0];
+		      let value = parts.slice(1).join(":");
+		      switch (key) {
+		        case "SUMMARY":
+		          currentEvent.SUMMARY = value;
+		          break;
+		        default:
+		          break;
+		      }
+		    }
+		  }
+		  return events;
+		}
+		
+		function copyText(){
+	
+	    
+		    Swal.fire({
+		        icon: 'success',
+		        title: 'Course code copied!',
+		        text: "Head to GoHighlander APP and add them under Schedule->List->Load Classes!",
+		        showConfirmButton: true
+		    });
+	    
+		}
+	</script>
+  </body>
+</html>

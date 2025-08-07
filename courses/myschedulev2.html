@@ -1,0 +1,517 @@
+<head>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+	<script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+	<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	<script src="gzip.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.0.4/pako.min.js" integrity="sha512-EAKzSKex+PXC0U9OG13r1059ysjrjkJEpZoONCnZa0mBROY28iBOOxZSErUVw1LzLr2+U5PhR7zPCPKidUVJqg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	<script src="https://cdn.jsdelivr.net/npm/darkreader@4.9.58/darkreader.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/pulltorefreshjs/0.1.22/index.umd.min.js" integrity="sha512-djmgTiVR15A/7fON+ojDzFYrRsfVkzQZu07ZVb0zLC1OhA2iISP39Lzs05GqSKF0vPjkLzL5hBC+am6po7dKpA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	<style>
+		.card-header {
+		    background-color: rgb(0, 61, 165);
+		    color: white;
+		}
+		.progress-bar {
+		    background-color: rgb(0, 61, 165);
+		}
+		.row-pad {
+		    padding-bottom: 25px;
+		}
+		.parent { display: -ms-flex; display: -webkit-flex; display: flex; }
+		.parent>div { flex:1; }
+		
+		.row {
+		    margin-right: unset !important;
+		    margin-left: unset !important;
+		}
+		
+		.container, .container-fluid, .container-lg, .container-md, .container-sm, .container-xl, .container-xxl {
+		    padding-right: unset !important;
+		    padding-left: unset !important;
+		}
+		.table>:not(caption)>*>* {
+		    padding: 0.5rem 0rem;
+		}
+		.small, small {
+		    font-size: .6em;
+		}
+		.card-body {
+		    padding: 0.5rem 0.5rem;
+		    text-align: center;
+		}
+		
+		.card-header {
+		    padding: 0.5rem 0.5rem;
+		    text-align: center;
+		}
+		html, body {
+			overscroll-behavior-y: none;
+		}
+	</style>
+</head>
+
+<br/>
+<div id="courses" class="container-fluid row">
+		
+</div>
+
+<table class="table" id="coursetable">
+  <thead>
+    <tr>
+	    
+      <th scope="col" class="col-2"><center>Mon</center></th>
+      <th scope="col" class="col-2"><center>Tues</center></th>
+      <th scope="col" class="col-2"><center>Wed</center></th>
+      <th scope="col" class="col-2"><center>Thurs</center></th>
+      <th scope="col" class="col-2"><center>Fri</center></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td id="m">
+
+		</td>
+      <td id="t">
+		</td>
+		<td id="w">
+
+		</td>
+		<td id="th">
+
+		</td>
+		<td id="f">
+
+		</td>
+    </tr>
+  </tbody>
+</table>
+	
+<script>
+	var nextClass = [];
+	var currTime = new Date();
+	var today = currTime.getDay();
+	var currentTime = parseInt(''+currTime.getHours()+(currTime.getMinutes()<10?'0':'') + currTime.getMinutes());
+/*document.getElementById("m").innerHTML += `
+											
+							<div class="card">
+							      <small class="card-header" style="background:`+color+`">
+							         `+courseNumber+`
+							      </small>
+							      <div class="card-body">
+							         <small class="card-text">
+							            `+sTime+` - `+eTime+`
+							         </small>
+							         
+							   </div>
+							</div>`;
+							
+						
+						var sTime = currCourse['sTime'];
+						var eTime = currCourse['eTime'];
+						var courseNumber = currCourse['courseNumber'];*/
+	
+	var mCourses = [];
+	var tCourses = [];
+	var wCourses = [];
+	var thCourses = [];
+	var fCourses = [];
+	
+	function loadSavedCourses(){
+			var defaultTerm = '';
+			if(getCookie("defaultTerm")){
+				defaultTerm = getCookie("defaultTerm");
+			}
+			
+	        if(getCookie(defaultTerm)){
+	        	var courseDatas = JSON.parse(gzipToText(getCookie(defaultTerm)));
+	        }else{
+		        setDefaultTerm();
+	        }
+	        if(!courseDatas){
+		        document.getElementById("courses").innerHTML = '<center><h1>No courses added yet. Go add some in courses tab!</h1></center>';
+		        document.getElementById("coursetable").style.display = "none";
+		        document.getElementById("courses").style.display = null;
+		        if(getCookie("termsData")){
+			        var termsData = JSON.parse(getCookie("termsData"));
+			        if(termsData.length >= 2){
+				        setDefaultTerm();
+			        }
+		        }
+		        return;
+	        }
+	        if(courseDatas.length == 0){
+		        document.getElementById("courses").innerHTML = '<center><h1>No courses added yet. Go add some in courses tab!</h1></center>';
+		        document.getElementById("coursetable").style.display = "none";
+		        document.getElementById("courses").style.display = null;
+		        if(getCookie("termsData")){
+			        var termsData = JSON.parse(getCookie("termsData"));
+			        if(termsData.length >= 2){
+				        setDefaultTerm();
+			        }
+		        }
+		        return;
+	        }
+	        
+	        document.getElementById("coursetable").style.display = null;
+			document.getElementById("courses").style.display = "none";
+	        
+			for(var i = 0; i < courseDatas.length;i++){
+						var currCourse = courseDatas[i]['course'];
+						
+						var m = currCourse['m'];
+						var t = currCourse['t'];
+						var w = currCourse['w'];
+						var th = currCourse['th'];
+						var f = currCourse['f'];
+						
+					    
+					    if(m){
+						    mCourses.push(currCourse);
+					    }
+					    if(t){
+						    tCourses.push(currCourse);
+					    }
+					    if(w){
+						    wCourses.push(currCourse);
+					    }
+					    if(th){
+						    thCourses.push(currCourse);
+					    }
+					    if(f){
+						    fCourses.push(currCourse);
+					    }
+				}
+				/**/
+				sort()
+				
+	}
+	loadSavedCourses();
+	
+	function sort(){
+		mCourses.sort((a, b) => a.sTime - b.sTime)
+		tCourses.sort((a, b) => a.sTime - b.sTime)
+		wCourses.sort((a, b) => a.sTime - b.sTime)
+		thCourses.sort((a, b) => a.sTime - b.sTime)
+		fCourses.sort((a, b) => a.sTime - b.sTime)
+		loadM();
+		loadT();
+		loadW();
+		loadTH();
+		loadF();
+	}
+	
+	
+	
+	function loadM(){
+		for(var i = 0; i < mCourses.length;i++){
+			var currCourse = mCourses[i];
+			var sTime = currCourse['sTime'];
+			var eTime = currCourse['eTime'];
+			var color = currCourse['color'];
+			var courseNumber = currCourse['courseTitle'];
+			var building = currCourse['bdst'] + " " +currCourse['room'];
+			var nextClassStr = "";
+			
+			if(today == 1){
+				if(parseInt(eTime) > currentTime && nextClass.length == 0){
+					nextClass = currCourse;
+					nextClassStr = "Next Class<br/>";
+					color = "#f2b946";
+				}
+			}
+			
+				document.getElementById("m").innerHTML += `
+				    <div class="card" onclick="parent.modalFrameGo('https://utils.gohighlander.app/courses/mycourses_params.html?course=' + encodeURIComponent('${courseNumber}'), '${courseNumber}');">
+				        <small class="card-header" style="background:${color}">
+				            ${courseNumber}
+				        </small>
+				        <div class="card-body">
+				            <small class="card-text">
+				                ${nextClassStr}
+				                ${time_convert(sTime)} - ${time_convert(eTime)}<br/>
+				                ${building}
+				            </small>
+				        </div>
+				    </div>`;
+
+		}
+			
+	}
+	
+	function loadT(){
+		for(var i = 0; i < tCourses.length;i++){
+			var currCourse = tCourses[i];
+			var sTime = currCourse['sTime'];
+			var eTime = currCourse['eTime'];
+			var color = currCourse['color'];
+			var courseNumber = currCourse['courseTitle'];
+			var building = currCourse['bdst'] + " " +currCourse['room'];
+			var nextClassStr = "";
+			
+			if(today == 2){
+				if(parseInt(eTime) > currentTime && nextClass.length == 0){
+					nextClass = currCourse;
+					nextClassStr = "Next Class<br/>";
+					color = "#f2b946";
+				}
+			}
+			
+				document.getElementById("t").innerHTML += `
+				    <div class="card" onclick="parent.modalFrameGo('https://utils.gohighlander.app/courses/mycourses_params.html?course=' + encodeURIComponent('${courseNumber}'), '${courseNumber}');">
+				        <small class="card-header" style="background:${color}">
+				            ${courseNumber}
+				        </small>
+				        <div class="card-body">
+				            <small class="card-text">
+				                ${nextClassStr}
+				                ${time_convert(sTime)} - ${time_convert(eTime)}<br/>
+				                ${building}
+				            </small>
+				        </div>
+				    </div>`;
+			
+		}
+	}
+	
+	function loadW(){
+		for(var i = 0; i < wCourses.length;i++){
+			var currCourse = wCourses[i];
+			var sTime = currCourse['sTime'];
+			var eTime = currCourse['eTime'];
+			var color = currCourse['color'];
+			var courseNumber = currCourse['courseTitle'];
+			var building = currCourse['bdst'] + " " +currCourse['room'];
+			var nextClassStr = "";
+			
+			if(today == 3){
+				if(parseInt(eTime) > currentTime && nextClass.length == 0){
+					nextClass = currCourse;
+					nextClassStr = "Next Class<br/>";
+					color = "#f2b946";
+				}
+			}
+			
+				document.getElementById("w").innerHTML += `
+				    <div class="card" onclick="parent.modalFrameGo('https://utils.gohighlander.app/courses/mycourses_params.html?course=' + encodeURIComponent('${courseNumber}'), '${courseNumber}');">
+				        <small class="card-header" style="background:${color}">
+				            ${courseNumber}
+				        </small>
+				        <div class="card-body">
+				            <small class="card-text">
+				                ${nextClassStr}
+				                ${time_convert(sTime)} - ${time_convert(eTime)}<br/>
+				                ${building}
+				            </small>
+				        </div>
+				    </div>`;
+			
+		}
+	}
+	
+	function loadTH(){
+		for(var i = 0; i < thCourses.length;i++){
+			var currCourse = thCourses[i];
+			var sTime = currCourse['sTime'];
+			var eTime = currCourse['eTime'];
+			var color = currCourse['color'];
+			var courseNumber = currCourse['courseTitle'];
+			var building = currCourse['bdst'] + " " +currCourse['room'];
+			var nextClassStr = "";
+			
+			if(today == 4){
+				if(parseInt(eTime) > currentTime && nextClass.length == 0){
+					nextClass = currCourse;
+					nextClassStr = "Next Class<br/>";
+					color = "#f2b946";
+				}
+			}
+			
+				document.getElementById("th").innerHTML += `
+				    <div class="card" onclick="parent.modalFrameGo('https://utils.gohighlander.app/courses/mycourses_params.html?course=' + encodeURIComponent('${courseNumber}'), '${courseNumber}');">
+				        <small class="card-header" style="background:${color}">
+				            ${courseNumber}
+				        </small>
+				        <div class="card-body">
+				            <small class="card-text">
+				                ${nextClassStr}
+				                ${time_convert(sTime)} - ${time_convert(eTime)}<br/>
+				                ${building}
+				            </small>
+				        </div>
+				    </div>`;
+			
+		}
+	}
+	
+	function loadF(){
+		for(var i = 0; i < fCourses.length;i++){
+			var currCourse = fCourses[i];
+			var sTime = currCourse['sTime'];
+			var eTime = currCourse['eTime'];
+			var color = currCourse['color'];
+			var courseNumber = currCourse['courseTitle'];
+			var building = currCourse['bdst'] + " " +currCourse['room'];
+			var nextClassStr = "";
+			
+			if(today == 5){
+				if(parseInt(eTime) > currentTime && nextClass.length == 0){
+					nextClass = currCourse;
+					nextClassStr = "Next Class<br/>";
+					color = "#f2b946";
+				}
+			}
+			
+				document.getElementById("f").innerHTML += `
+				    <div class="card" onclick="parent.modalFrameGo('https://utils.gohighlander.app/courses/mycourses_params.html?course=' + encodeURIComponent('${courseNumber}'), '${courseNumber}');">
+				        <small class="card-header" style="background:${color}">
+				            ${courseNumber}
+				        </small>
+				        <div class="card-body">
+				            <small class="card-text">
+				                ${nextClassStr}
+				                ${time_convert(sTime)} - ${time_convert(eTime)}<br/>
+				                ${building}
+				            </small>
+				        </div>
+				    </div>`;
+			
+		}
+	}
+	
+	
+	
+	function removeCourse(courseNumber,secNumber) {
+			var courseDatas = JSON.parse(gzipToText(getCookie("courseDatav2")));
+			for(var i = 0; i < courseDatas.length;i++){
+				cNum = courseDatas[i]['course']['courseNumber'];
+				sNum = courseDatas[i]['course']['secNumber'];
+				if(courseNumber == cNum && secNumber == sNum){
+					courseDatas.splice(i, 1);
+				}
+			}
+			eraseCookie("courseDatav2");
+			setCookie("courseDatav2",textToGzip(JSON.stringify(courseDatas)),99);
+			/*Swal.fire(
+			  'Success',
+			  'Course Removed',
+			  'success'
+			)*/
+			loadSavedCourses()
+	}
+	function setCookie(cname, cvalue, exdays) {
+	  const d = new Date();
+	  d.setTime(d.getTime() + (exdays*24*60*60*1000));
+	  let expires = "expires="+ d.toUTCString();
+	  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+	}
+	
+	function getCookie(cname) {
+	  let name = cname + "=";
+	  let decodedCookie = decodeURIComponent(document.cookie);
+	  let ca = decodedCookie.split(';');
+	  for(let i = 0; i <ca.length; i++) {
+	    let c = ca[i];
+	    while (c.charAt(0) == ' ') {
+	      c = c.substring(1);
+	    }
+	    if (c.indexOf(name) == 0) {
+	      return c.substring(name.length, c.length);
+	    }
+	  }
+	  return "";
+	}
+	
+	function eraseCookie(name) {   
+    	document.cookie = name+'=; Max-Age=-99999999;';  
+	}
+	
+	function time_convert(num)
+	 { 
+	  var hours = Math.floor(num / 100);  
+	  var suffix = hours >= 12 ? "PM":"AM";
+	  hours = ((hours + 11) % 12 + 1)
+	  var minutes = Math.floor(num % 100);
+	  if(minutes == 0){
+		  minutes = "00"
+	  }
+	  return hours + ":" + minutes + suffix;         
+	}
+	
+	var checkCookie = function() {
+	
+	    var lastCookie = document.cookie;
+	
+	    return function() {
+	
+	        var currentCookie = document.cookie;
+	
+	        if (currentCookie != lastCookie) {
+	
+	            mCourses = [];
+				tCourses = [];
+				wCourses = [];
+				thCourses = [];
+				fCourses = [];
+				nextClass = [];
+				document.getElementById("m").innerHTML = "";
+				document.getElementById("t").innerHTML = "";
+				document.getElementById("w").innerHTML = "";
+				document.getElementById("th").innerHTML = "";
+				document.getElementById("f").innerHTML = "";
+				loadSavedCourses();
+	            lastCookie = currentCookie; 
+	
+	        }
+	    };
+	}();
+	
+	function setDefaultTerm(){
+		if(Swal.isVisible()){
+			return;
+		}
+		if(getCookie("termsData") && !getCookie("defaultTerm")){
+			const inputOptions = JSON.parse(getCookie("termsData"))
+			
+			const selectedTerm = Swal.fire({
+			  title: 'Select Term',
+			  input: 'select',
+			  inputLabel: 'You can always change this in course management page.',
+			  inputOptions: inputOptions,
+			  inputValidator: (value) => {
+			    if (!value) {
+			      return 'You need to choose something!'
+			    }else{
+				    var selectedTerm = inputOptions[value];
+				    if(getCookie("defaultTerm")){
+					    eraseCookie("defaultTerm");
+						setCookie("defaultTerm",selectedTerm,999);
+				    }else{
+					    setCookie("defaultTerm",selectedTerm,999);
+				    }
+			    }
+			  }
+			})
+			
+			
+		}
+	}
+	
+	window.setInterval(setDefaultTerm, 1000);
+	
+	
+	
+	window.setInterval(checkCookie, 100);
+	//dark reader
+	DarkReader.auto({
+	    brightness: 100,
+	    contrast: 100
+	});
+	
+	const ptr = PullToRefresh.init({
+		  mainElement: 'body',
+		  onRefresh() {
+		    window.location.reload();
+		  }
+		});
+</script>

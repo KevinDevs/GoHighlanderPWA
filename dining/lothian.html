@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Lothian Menu</title>
+	<!-- Bootstrap CSS -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+	<script src="https://cdn.jsdelivr.net/npm/darkreader@4.9.58/darkreader.min.js"></script>
+	<style>
+		.meal-header {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+		}
+		html, body {
+		  overscroll-behavior-y: none;
+		}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<h1 class="text-center mt-5">Lothian Menu</h1>
+		<h2 class="text-center mb-3" id="title"></h2>
+		<div class="row">
+			<!-- Generate the menu dynamically based on the meal-name -->
+			<script>
+				fetch('https://dining-api.gohighlander.app/api/lothian')
+					.then(response => response.json())
+					.then(data => {
+						let uniqueMealNames = new Set();
+						let menuHTML = '';
+						let mealButtonsHTML = '';
+						try{
+						data.meal.forEach(meal => {
+							// Only keep the first occurrence of meal-name
+							if (!uniqueMealNames.has(meal['meal-name'])) {
+								uniqueMealNames.add(meal['meal-name']);
+								mealButtonsHTML += `
+									<button type="button" class="btn btn-dark me-3" data-meal-name="${meal['meal-name']}">${meal['meal-name']}</button>
+								`;
+								menuHTML += `
+								<div class="col-md mb-5 menu-card ${meal['meal-name']}" style="display: none">
+									<div class="card h-100">
+										<div class="card-header bg-dark text-white meal-header">
+											<h4>${meal['meal-name']}</h4>
+											<span class="badge bg-secondary">${meal.menu.length} menu sections</span>
+										</div>
+										<div class="card-body">
+								`;
+									meal.menu.forEach(menuSection => {
+									menuHTML += `
+										<h5 class="card-title">${menuSection['menu-section'].category}</h5>
+										<ul class="list-group list-group-flush">
+									`;
+									menuSection['menu-section'].items.split(',').forEach(item => {
+										menuHTML += `<li class="list-group-item">${item.trim()}</li>`;
+									});
+									menuHTML += '</ul>';
+								});
+								menuHTML += `
+											</div>
+										</div>
+									</div>
+								`;
+							}
+						});
+						}catch{
+							mealButtonsHTML = '<h1>No Menu Today</h1>';
+						}
+						document.getElementById('menu').innerHTML = menuHTML;
+						document.getElementById('meal-buttons').innerHTML = mealButtonsHTML;
+
+						// Add click event listener to each meal button
+						document.querySelectorAll('#meal-buttons button').forEach(button => {
+							button.addEventListener('click', () => {
+								// Hide all menu cards
+								document.querySelectorAll('.menu-card').forEach(card => {
+									card.style.display = 'none';
+								});
+								// Show the selected menu cards
+								document.querySelectorAll(`.${button.dataset.mealName}`).forEach(card => {
+									card.style.display = 'block';
+								});
+							});
+						});
+					});
+				// Set today's date on the title
+						const today = new Date();
+						const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+						document.getElementById('title').textContent = `${today.toLocaleDateString('en-US', options)}`;
+			</script>
+			<div class="col-12">
+				<div class="text-center mb-3" id="location-buttons">
+					<button type="button" class="btn btn-dark me-3" onclick="window.location.replace('glasgow.html');">Switch To Glasgow</button>
+				</div>
+				<div class="text-center mb-3" id="meal-buttons">Loading...</div>
+				<div class="row row-cols-1 row-cols-md-2 g-4 justify-content-center" id="menu"></div>
+			</div>
+		</div>
+	</div>
+	<script>
+		//dark reader
+	DarkReader.auto({
+	    brightness: 100,
+	    contrast: 100
+	});
+		//swipe right detection
+document.addEventListener('swiped-right', function(e) {
+			   window.parent.$('#iframeModal').modal('hide');
+            });
+	</script>
+	<script src="/pwa/swipe.js"></script>
+</body>
+</html>

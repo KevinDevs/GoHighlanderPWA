@@ -1,0 +1,379 @@
+<head>
+	<title>QR Scan</title>
+	<!-- SCAN -->
+	<script src="qr-scanner.umd.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+    <script src="gzip.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.0.4/pako.min.js" integrity="sha512-EAKzSKex+PXC0U9OG13r1059ysjrjkJEpZoONCnZa0mBROY28iBOOxZSErUVw1LzLr2+U5PhR7zPCPKidUVJqg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+	<style>
+		html, body {
+		  overscroll-behavior-y: none;
+		}
+	</style>
+</head>
+<body>
+	
+	<div class="container my-4">
+        <h2 class="text-center mb-4">Add Courses</h2>
+
+        
+        <div class="container mt-3">
+	        
+	    </div>
+
+        <div id="scanner-div" style="display:none">
+            <video id="scanner" style="max-height: 500px; width: 100%"></video>
+        </div>
+
+        <div class="mt-4">
+            <h3 id="term-block" class="text-center"></h3>
+            <p id="course-code" class="text-success"></p>
+        </div>
+
+        <div id="eventContainer" class="alert alert-primary mt-4" style="display:none">Loading...<br/><br/><strong>Your Courses:</strong><br/></div>
+
+        <div id="save-to-schedule" class="mt-4" style="display:none">
+            <button class="btn btn-success" onclick="saveToCourses();">Add To Schedule</button>
+        </div>
+	
+	
+	<script>
+		/*document.getElementById('uploadButton').addEventListener('click', function() {
+		    document.getElementById('fileInput').click();
+		});
+		var term, courses;
+		
+		var videoElem = document.getElementById("scanner");
+		var decoded;
+		const qrScanner = new QrScanner(
+		    videoElem,
+		    result => processResult(result),
+		    {},
+		);
+		
+		document.getElementById('fileInput').addEventListener('change', event => {
+		    const file = event.target.files[0];
+		    
+		    if (file) {
+		        const reader = new FileReader();
+		        
+		        reader.onload = function(e) {
+		            const img = new Image();
+		            img.src = e.target.result;
+		
+		            img.onload = function() {
+		                QrScanner.scanImage(img)
+		                    .then(result => processResultPicture(result))
+		                    .catch(error => noQRDetected());
+		            };
+		        };
+		
+		        reader.readAsDataURL(file);
+		    } else {
+		        console.log('No file selected.');
+		    }
+		});
+		*/
+		
+		const queryString = window.location.search;
+	    const urlParams = new URLSearchParams(queryString);
+	    
+	    const termParam = urlParams.get('term')
+		
+		const coursesParam = urlParams.get('courses')
+		
+		const coursesParamDecode = JSON.parse(coursesParam);
+		
+		var rTermCode;
+		var termName = termParam.substring(0, termParam.lastIndexOf(".")).replace(/\s*\([^)]*\)\s*/g, "");
+		var coursesObj;
+		var addCourseObj = [];
+		var coursesData = [];
+		var totalCourses = coursesParamDecode.length;
+		var currCourses = 0;
+		
+		var term = termName;
+		var courses = coursesParamDecode;
+		document.getElementById("term-block").innerHTML = term;
+		run();
+		
+	   
+	  	//swal
+		function submitted(){
+				Swal.fire({
+				  position: 'top-end',
+				  icon: 'success',
+				  title: 'Success!',
+				  showConfirmButton: false,
+				  timer: 1500
+				})
+		}
+			
+	var ctext;
+	function run(){
+	    
+		var rTermCode;
+		var termName = term;
+		var coursesObj;
+		var addCourseObj = [];
+		var coursesData = [];
+		var totalCourses = courses.length;
+		var currCourses = 0;
+		
+		
+		findTermCode(termName)
+		    .then(termCode => {
+		      rTermCode = termCode;
+		      document.getElementById("eventContainer").innerHTML = "";
+		      courses.forEach(function(currCourse){
+			      console.log(currCourse);
+			      let eventDiv = document.createElement("div");
+			      	document.getElementById("eventContainer").style.display = "";
+					addCourse(currCourse[0], currCourse[1], currCourse[2], rTermCode);
+				    eventDiv.innerHTML = currCourse[0] + currCourse[1] + " " +currCourse[2];
+				    eventContainer.appendChild(eventDiv);
+				});
+		        
+		    });
+			     
+		
+		
+		
+		
+		
+	function addCourse(subj, course, section) {
+	    fetch('https://catalog.gohighlander.app/api/v1/'+rTermCode+'/'+subj+'.json')
+	        .then(response => response.json())
+	        .then(data => {
+	            coursesObj = data.data;
+	            for (let i = 0; i < coursesObj.length; i++) {
+	                if (coursesObj[i].subjectCourse == subj+course && coursesObj[i].sequenceNumber == section) {
+	                    let courseSection = coursesObj[i];
+	                    addCourseObj.push(courseSection);
+						currCourses++;
+			            //console.log(currCourses);
+				        if(currCourses == totalCourses){
+					        //console.log("success");
+					        genJson();
+					        //document.getElementById("eventContainer").style.display = "none";
+				        }
+	                    return;
+	                }
+	            }
+	        });
+	    }
+	    var ran = false;
+	    function genJson(){
+		    if(ran){return;}
+		    //console.log(currCourses + currCourses);
+		    addCourseObj.forEach(function(currCourse) {
+				var courseNumber = currCourse['subject'] + currCourse['courseNumber'];
+				var secNumber = currCourse['sequenceNumber'];
+				var courseTitle = courseNumber + " - " + secNumber;
+				var description = currCourse['courseTitle'];
+				var faculty = currCourse['faculty'];
+				var building = currCourse['meetingsFaculty'][0]['meetingTime']['buildingDescription']
+				var room = currCourse['meetingsFaculty'][0]['meetingTime']['room']
+				var type = currCourse['scheduleTypeDescription']
+				var sTime = currCourse['meetingsFaculty'][0]['meetingTime']['beginTime']
+				var eTime = currCourse['meetingsFaculty'][0]['meetingTime']['endTime']
+				var sDate = currCourse['meetingsFaculty'][0]['meetingTime']['startDate']
+				var eDate = currCourse['meetingsFaculty'][0]['meetingTime']['endDate']
+				var m = currCourse['meetingsFaculty'][0]['meetingTime']['monday']
+				var t = currCourse['meetingsFaculty'][0]['meetingTime']['tuesday']
+				var w = currCourse['meetingsFaculty'][0]['meetingTime']['wednesday']
+				var th = currCourse['meetingsFaculty'][0]['meetingTime']['thursday']
+				var f = currCourse['meetingsFaculty'][0]['meetingTime']['friday']
+				var mStyle = "bg-primary";
+				var tStyle = "bg-primary";
+				var wStyle = "bg-primary";
+				var thStyle = "bg-primary";
+				var wStyle = "bg-primary";
+				var fStyle = "bg-primary";
+				if (!m) {
+				    mStyle = "bg-secondary";
+				}
+				if (!t) {
+				    tStyle = "bg-secondary";
+				}
+				if (!w) {
+				    wStyle = "bg-secondary";
+				}
+				if (!th) {
+				    thStyle = "bg-secondary";
+				}
+				if (!f) {
+				    fStyle = "bg-secondary";
+				}
+				var facultyNames = "";
+				for (var j = 0; j < faculty.length; j++) {
+				    var facEmail = faculty[j]['emailAddress'];
+				    var name = faculty[j]['displayName'];
+				    var primary = faculty[j]['primaryIndicator'];
+				    var primaryName = "";
+				    if (primary) {
+				        primaryName = "Primary ";
+				    }
+				    if (faculty.length == 1) {
+				        facultyNames += primaryName + "Instructor: <a target=\"_blank\" href='mailto:" + facEmail + "'> " + name + "</a>";
+				    } else {
+				        facultyNames += primaryName + "Instructor: <a target=\"_blank\" href='mailto:" + facEmail + "'> " + name + "</a>" + "<br/> ";
+				    }
+				
+				    if (j == faculty.length) {
+				        facultyNames += primaryName + "Instructor: <a target=\"_blank\" href='mailto:" + facEmail + "'> " + name + "</a>";
+				    }
+				}
+				if (type == "Lecture") {
+				    color = "rgb(0, 61, 165)";
+				} else {
+				    color = "rgb(62 91 141)";
+				}
+				var courseData = {
+				    course: {}
+				};
+				courseData.course["color"] = color;
+				courseData.course["description"] = description;
+				courseData.course["courseTitle"] = courseTitle;
+				courseData.course["building"] = building;
+				courseData.course["room"] = room;
+				courseData.course["type"] = type;
+				courseData.course["facultyNames"] = facultyNames;
+				courseData.course["m"] = m;
+				courseData.course["t"] = t;
+				courseData.course["w"] = w;
+				courseData.course["th"] = th;
+				courseData.course["f"] = f;
+				courseData.course["sTime"] = sTime;
+				courseData.course["eTime"] = eTime;
+				courseData.course["sDate"] = sDate;
+				courseData.course["eDate"] = eDate;
+				courseData.course["courseNumber"] = courseNumber;
+				courseData.course["secNumber"] = secNumber;
+				courseData.course["bdst"] = currCourse['meetingsFaculty'][0]['meetingTime']['building'];
+				courseData.course["term"] = termName;
+				coursesData.push(courseData);
+			});
+			ctext = JSON.stringify(coursesData);
+			ctext = textToGzip(ctext);
+			//document.getElementById("course-code").innerHTML = ctext;
+			document.getElementById("save-to-schedule").style.display = "";
+			//console.log(ctext);
+			ran = true;
+	    }
+	   }
+		
+		function findTermCode(termName){
+		  return fetch("https://catalog.gohighlander.app/api/v1/terms.json")
+		    .then(response => response.json())
+		    .then(data => {
+		      let terms = data;
+		      for (let i = 0; i < terms.length; i++) {
+		        if (terms[i].description.replace(' (View Only)','') == termName) {
+		          return Promise.resolve(terms[i].code);
+		        }
+		      }
+		    });
+		}
+		
+		function saveToCourses(){
+			//TERMS DATA HANDLING
+			var termsData = getCookie("termsData");
+			//check if terms data exists
+			if(termsData){
+				termsData = JSON.parse(termsData);
+				//check if term is in termsdata
+				if(termsData.indexOf(term) == -1){
+					termsData.push(term)
+				}
+			}else{
+				termsData = [term];
+			}
+			
+			termsData = JSON.stringify(termsData);
+			console.log(termsData);
+			
+			
+			setCookie("termsData", termsData, 999);
+			
+			var termCourses = getCookie(term);
+			
+			if(!termCourses){
+				setCookie(term, ctext, 999);
+				Swal.fire({
+				  icon: "success",
+				  title: "Success",
+				  text: "You have successfully added your courses to GoHighlander! Remember go to [My Courses page -> All The Way Down -> Set Default Term] to update your term view!"
+				});
+			}else{
+				Swal.fire({
+				  title: 'Are you sure?',
+				  text: 'You have already added courses for this term, this will override the courses you already added. Are you sure?',
+				  icon: 'warning',
+				  showCancelButton: true,
+				  confirmButtonColor: '#DD6B55',
+				  confirmButtonText: 'Yes, I am sure!',
+				  cancelButtonText: 'No, cancel it!'
+				}).then((result) => {
+				  if (result.value) {
+					setCookie(term, ctext, 999);
+				    Swal.fire(
+				      'Success!',
+				      'You have successfully added your courses! Remember go to [My Courses page -> All The Way Down -> Set Default Term] to update your term view!',
+				      'success'
+				    );
+				  } else if (result.dismiss === Swal.DismissReason.cancel) {
+				    Swal.fire(
+				      'Cancelled',
+				      'Your courses for this term are not overridden.',
+				      'error'
+				    );
+				  }
+				});
+			}
+		}
+		
+		//cookie misc
+		function setCookie(cname, cvalue, exdays) {
+		  const d = new Date();
+		  d.setTime(d.getTime() + (exdays*24*60*60*1000));
+		  let expires = "expires="+ d.toUTCString();
+		  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+		}
+		
+		function getCookie(cname) {
+		  let name = cname + "=";
+		  let decodedCookie = decodeURIComponent(document.cookie);
+		  let ca = decodedCookie.split(';');
+		  for(let i = 0; i <ca.length; i++) {
+		    let c = ca[i];
+		    while (c.charAt(0) == ' ') {
+		      c = c.substring(1);
+		    }
+		    if (c.indexOf(name) == 0) {
+		      return c.substring(name.length, c.length);
+		    }
+		  }
+		  return "";
+		}
+		
+		function eraseCookie(name) {   
+	    	document.cookie = name+'=; Max-Age=-99999999;';  
+		}
+	DarkReader.auto({
+	    brightness: 100,
+	    contrast: 100
+	});
+	</script>
+	<script>
+		//swipe right detection
+document.addEventListener('swiped-right', function(e) {
+			   window.parent.$('#iframeModal').modal('hide');
+            });
+	</script>
+	<script src="https://cdn.jsdelivr.net/npm/darkreader@4.9.58/darkreader.min.js"></script>
+	<script src="/pwa/swipe.js"></script>
+</body>

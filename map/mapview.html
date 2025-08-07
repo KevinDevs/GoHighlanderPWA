@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Campus Navigation</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+	<script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover, user-scalable=no">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="/images/apple-touch-icon.png">
+	<link rel="manifest" href="manifest_navi.json">
+	<meta name="mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+	<script src="https://cdn.jsdelivr.net/npm/darkreader@4.9.58/darkreader.min.js"></script>
+		<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/css/bootstrap-select.min.css">
+	
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/js/bootstrap-select.min.js"></script>
+	<!-- Import Vue.js -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+    
+    <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v2.9.2/mapbox-gl.js"></script>
+<link
+href="https://api.tiles.mapbox.com/mapbox-gl-js/v2.9.2/mapbox-gl.css"
+rel="stylesheet"
+/>
+<script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.min.js"></script>
+<link
+rel="stylesheet"
+href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.css"
+type="text/css"
+/>
+<script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.1.0/mapbox-gl-directions.js"></script>
+<link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.1.0/mapbox-gl-directions.css" type="text/css">
+<style>
+body {
+margin: 0;
+padding: 0;
+}
+#map {
+position: absolute;
+top: 0;
+bottom: 0;
+width: 100%;
+}
+</style>
+
+
+	<style>
+		.card-header {
+		    background-color: rgb(0, 61, 165);
+		    color: white;
+		}
+		.progress-bar {
+		    background-color: rgb(0, 61, 165);
+		}
+		.row-pad {
+		    padding-bottom: 25px;
+		}
+		.parent { display: -ms-flex; display: -webkit-flex; display: flex; }
+		.parent>div { flex:1; }
+		
+		.row {
+		    margin-right: unset !important;
+		    margin-left: unset !important;
+		}
+		.mapbox-directions-origin{
+			display: none;
+		}
+		.mapbox-directions-destination{
+			display:none;
+		}
+		.directions-reverse{
+			display:none
+		}
+		
+		.container, .container-fluid, .container-lg, .container-md, .container-sm, .container-xl, .container-xxl {
+		    padding-right: unset !important;
+		    padding-left: unset !important;
+		}
+		[v-cloak] {
+		  display:none;
+		}
+		
+		html, body {
+		  overscroll-behavior-y: none;
+		}
+	</style>
+</head>
+  <body>
+<div id="loading" style=" z-index: 99999; position: sticky; background: rgb(0, 61, 165); top: 0px; ">
+<center>
+	<h1 style="color:white">Working on it... Please wait</h1>
+	<div class="spinner-border text-light" role="status">
+	</div>
+	<br/>
+	<br/>
+<!--<button class="btn btn-primary" id="submit_email" onclick="find()">SUBMIT</button>-->
+</center>
+</div>
+    <div id="app">
+	    
+	    <div class="row" id="menuBar" style="z-index: 99999;position: sticky;background: rgb(0, 61, 165);top: 0; display:none">
+		    <center>
+                 <div style="padding-top:10px">
+	                 <select class="origin" d="origin" data-live-search="true" style=" -ms-transform: translateY(-50%); margin: 0; position: absolute; top: 30%;; left: 50%; -ms-transform: translate(-50%, -50%); transform: translate(-50%, -50%); margin-left: auto; margin-right: auto;">
+		                     	<option>Select Origin</option>
+		                     	<option>My Location</option>
+								<option v-for="loc in locations" :data-tokens="loc[8]" :coords="loc[2]">{{loc[0]}}</option>
+						</select>
+						</div>
+				<div style="padding-top:10px">
+                     <select class="locations" d="locations" data-live-search="true" style=" -ms-transform: translateY(-50%); margin: 0; position: absolute; top: 30%;; left: 50%; -ms-transform: translate(-50%, -50%); transform: translate(-50%, -50%); margin-left: auto; margin-right: auto;">
+	                     	<option>Select Destination</option>
+							<option v-for="loc in locations" :data-tokens="loc[8]" :coords="loc[2]">{{loc[0]}}</option>
+					</select>
+				</div>
+				
+				<div id="naviButtons" style="display:none">
+					<font id="summary" style="color:white"></font>
+					<br/>
+					<center style="color:white">More Accurate Navigation</center>
+					<a type="button" id="appleButton" target="_blank" href="" class="btn btn-primary btn-sm btn-block">Apple Maps</a> &nbsp; 
+					<a type="button" id="googleButton" target="_blank" href="" class="btn btn-primary btn-sm btn-block">Google Maps</a>
+				</div>
+			<br/>
+		    </center>
+		   
+                </div>   
+                <div id="map" style="margin-top: 120px;"></div>                     
+            </div>
+            <br/>
+            <br/>
+         
+		
+		
+		
+    </div>
+
+    <!-- Import App -->
+    <script src="./mapview.js"></script>
+
+    <!-- Mount App -->
+    <script>
+    const mountedApp = app.mount('#app');
+    var loc1,loc2;
+    //check inputs
+    $('.origin').each(function() {
+	   var elem = $(this);
+	
+	   elem.data('oldVal', elem.val());
+	
+	   elem.bind("propertychange change click keyup input paste", function(event){
+	      if (elem.data('oldVal') != elem.val()) {
+	       elem.data('oldVal', elem.val());
+		   
+	       if(elem.val() == "Select Destination"){
+		       loc1 = "";
+		       updateMapsButton();
+	       }else if(elem.val() == "My Location"){
+		       getlocate.trigger();
+		       navigator.geolocation.getCurrentPosition(onSuccess,onFail);
+	       }else{
+		       console.log(elem.val())
+		       for(var l of mountedApp.locations){
+			       if(elem.val() == l[0]){
+				       console.log(l[6]+","+l[7])
+				       dir.setOrigin(l[7]+","+l[6]);
+				       loc1 = l[6]+","+l[7];
+				       updateMapsButton();
+				       document.getElementById("summary").innerHTML = "Loading...";
+			       }
+		       }
+	       }
+	     }
+	   });
+	 });
+	 
+	$('.locations').each(function() {
+	   var elem = $(this);
+	
+	   elem.data('oldVal', elem.val());
+	
+	   elem.bind("propertychange change click keyup input paste", function(event){
+	      if (elem.data('oldVal') != elem.val()) {
+	       elem.data('oldVal', elem.val());
+		   
+	       if(elem.val() != "Select Destination"){
+		       console.log(elem.val())
+		       for(var l of mountedApp.locations){
+			       if(elem.val() == l[0]){
+				       console.log(l[6]+","+l[7])
+				       dir.setDestination(l[7]+","+l[6]);
+				       loc2 = l[6]+","+l[7];
+				       updateMapsButton();
+				       document.getElementById("summary").innerHTML = "Loading...";
+			       }
+		       }
+	       }else{
+		       loc2 = "";
+		       updateMapsButton();
+	       }
+	     }
+	   });
+	 });
+	 
+	 function updateMapsButton(){
+		 if((loc1 && loc2) && (loc1 != loc2)){
+			 console.log("MAPBUTTON " + loc1 + " " + loc2);
+			 document.getElementById("appleButton").setAttribute("href", "http://maps.apple.com/?daddr="+loc1+"&saddr="+loc2+"&dirflg=w");
+			 document.getElementById("googleButton").setAttribute("href", "https://www.google.com/maps/dir/?origin="+loc1+"&destination="+loc2+"&api=1&travelmode=walking");
+			 document.getElementById("naviButtons").style.display = "";
+			 document.getElementById("map").style.marginTop = "199px";
+		 }else{
+			 console.log("DISABLE BUTTON");
+			 document.getElementById("naviButtons").style.display = "none";
+			 document.getElementById("map").style.marginTop = "120px";
+		 }
+	 }
+	 
+	 var lastSummary;
+	 function updateSummary(){
+		if(document.getElementsByClassName("mapbox-directions-route-summary")[0] && lastSummary != document.getElementsByClassName("mapbox-directions-route-summary")[0]){
+			lastSummary = document.getElementsByClassName("mapbox-directions-route-summary")[0];
+			document.getElementById("summary").innerHTML = document.getElementsByClassName("mapbox-directions-route-summary")[0].outerText;
+		}
+	 }
+	 
+	 var summaryInterval = window.setInterval(function(){
+	  updateSummary();
+	}, 1000);
+    </script>
+    <script>
+mapboxgl.accessToken = 'pk.eyJ1Ijoia2V2aW5zb21lb25lIiwiYSI6ImNreWVhZWhqODBicHUycGxobjB4a2RtaXoifQ.62h4nM-5YwmHup3j1rJCDA';
+const map = new mapboxgl.Map({
+container: 'map', // Container ID
+style: 'mapbox://styles/kevinsomeone/cl9d88y22004j14p5gs6zhbbc', // Map style to use
+center: [-117.325622, 33.974189], // starting center in [lng, lat]
+zoom: 14.56, // starting zoom
+});
+ 
+ 
+const geocoder = new MapboxGeocoder({
+// Initialize the geocoder
+accessToken: mapboxgl.accessToken, // Set the access token
+mapboxgl: mapboxgl, // Set the mapbox-gl instance
+marker: false, // Do not use the default marker style
+placeholder: 'Search UCR', // Placeholder text for the search bar
+bbox: [-117.33995790122279, 33.96834303473933, -117.32062780678665, 33.97932733537322], // Boundary
+proximity: {
+longitude: -117.32817068577536,
+latitude: 33.97335246704715
+} // Coordinates of UC Berkeley
+});
+ 
+// Add the geocoder to the map
+//map.addControl(geocoder);
+ 
+// After the map style has loaded on the page,
+// add a source layer and default styling for a single point
+map.on('load', () => {
+map.addSource('single-point', {
+'type': 'geojson',
+'data': {
+'type': 'FeatureCollection',
+'features': []
+}
+});
+ 
+map.addLayer({
+'id': 'point',
+'source': 'single-point',
+'type': 'circle',
+'paint': {
+'circle-radius': 10,
+'circle-color': '#448ee4'
+}
+});
+ 
+// Listen for the `result` event from the Geocoder // `result` event is triggered when a user makes a selection
+//  Add a marker at the result's coordinates
+geocoder.on('result', (event) => {
+map.getSource('single-point').setData(event.result.geometry);
+});
+});
+
+// Add geolocate control to the map.
+const getlocate = new mapboxgl.GeolocateControl({
+positionOptions: {
+enableHighAccuracy: true
+},
+// When active the map will receive updates to the device's location as it changes.
+trackUserLocation: true,
+// Draw an arrow next to the location dot to indicate which direction the device is heading.
+showUserHeading: true,
+showAccuracyCircle: true
+})
+
+map.addControl(getlocate);
+
+
+var dir = new MapboxDirections({
+		accessToken: mapboxgl.accessToken,
+		profile: 'mapbox/walking'
+		});
+map.addControl(dir,'top-left');
+		
+
+function onSuccess(position) {
+        const {
+            latitude,
+            longitude
+        } = position.coords;
+        
+        console.log(longitude + "," +latitude)
+		dir.setOrigin(longitude + "," +latitude);
+		loc1 = latitude + "," + longitude;
+		updateMapsButton();
+    }
+function onFail(){
+	Swal.fire({
+	        icon: 'warning',
+	        title: 'Unable to retrieve location',
+	        text: "Please check if you allowed location access to this website, or search for a location in the list as origin.",
+	        showConfirmButton: true
+	    });
+}
+    
+function offSuggestion(){
+	document.querySelectorAll('.suggestions')[1].style.display = "none";
+	document.querySelectorAll('.directions-control-instructions')[0].style.display = "none";
+}
+
+var intervalId = window.setInterval(function(){
+  offSuggestion()
+}, 500);
+
+
+//dark reader
+	DarkReader.auto({
+	    brightness: 100,
+	    contrast: 100
+	});
+
+</script>
+  </body>
+</html>

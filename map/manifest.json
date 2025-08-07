@@ -1,0 +1,21 @@
+{
+  "name": "Campus Location",
+  "short_name": "Campus Location",
+  "lang": "en",
+  "display": "standalone",
+  "theme_color": "#fff",
+  "orientation":"portrait",
+  "start_url":"/map/",
+  "icons": [
+	{
+      "src": "/images/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "/images/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}

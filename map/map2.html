@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Demo: Local search with the Geocoding API</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<script src="https://api.tiles.mapbox.com/mapbox-gl-js/v2.9.2/mapbox-gl.js"></script>
+<link
+href="https://api.tiles.mapbox.com/mapbox-gl-js/v2.9.2/mapbox-gl.css"
+rel="stylesheet"
+/>
+<script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.min.js"></script>
+<link
+rel="stylesheet"
+href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.css"
+type="text/css"
+/>
+<script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.1.0/mapbox-gl-directions.js"></script>
+<link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.1.0/mapbox-gl-directions.css" type="text/css">
+<style>
+body {
+margin: 0;
+padding: 0;
+}
+#map {
+position: absolute;
+top: 0;
+bottom: 0;
+width: 100%;
+}
+</style>
+</head>
+<body>
+<div id="map"></div>
+ 
+<script>
+mapboxgl.accessToken = 'pk.eyJ1Ijoia2V2aW5zb21lb25lIiwiYSI6ImNreWVhYzN5ZzEwemIydnBpbnN2M3dmdjMifQ.8TAIdDsrCfXZqAAzGFR2Rw';
+const map = new mapboxgl.Map({
+container: 'map', // Container ID
+style: 'mapbox://styles/kevinsomeone/cl9d88y22004j14p5gs6zhbbc', // Map style to use
+center: [-117.325622, 33.974189], // starting center in [lng, lat]
+zoom: 14.56, // starting zoom
+});
+ 
+ 
+const geocoder = new MapboxGeocoder({
+// Initialize the geocoder
+accessToken: mapboxgl.accessToken, // Set the access token
+mapboxgl: mapboxgl, // Set the mapbox-gl instance
+marker: false, // Do not use the default marker style
+placeholder: 'Search UCR', // Placeholder text for the search bar
+bbox: [-117.33995790122279, 33.96834303473933, -117.32062780678665, 33.97932733537322], // Boundary
+proximity: {
+longitude: -117.32817068577536,
+latitude: 33.97335246704715
+} // Coordinates of UC Berkeley
+});
+ 
+// Add the geocoder to the map
+//map.addControl(geocoder);
+ 
+// After the map style has loaded on the page,
+// add a source layer and default styling for a single point
+map.on('load', () => {
+map.addSource('single-point', {
+'type': 'geojson',
+'data': {
+'type': 'FeatureCollection',
+'features': []
+}
+});
+ 
+map.addLayer({
+'id': 'point',
+'source': 'single-point',
+'type': 'circle',
+'paint': {
+'circle-radius': 10,
+'circle-color': '#448ee4'
+}
+});
+ 
+// Listen for the `result` event from the Geocoder // `result` event is triggered when a user makes a selection
+//  Add a marker at the result's coordinates
+geocoder.on('result', (event) => {
+map.getSource('single-point').setData(event.result.geometry);
+});
+});
+
+// Add geolocate control to the map.
+const getlocate = new mapboxgl.GeolocateControl({
+positionOptions: {
+enableHighAccuracy: true
+},
+// When active the map will receive updates to the device's location as it changes.
+trackUserLocation: true,
+// Draw an arrow next to the location dot to indicate which direction the device is heading.
+showUserHeading: true
+})
+
+map.addControl(getlocate);
+
+
+var dir = new MapboxDirections({
+		accessToken: mapboxgl.accessToken,
+		profile: 'mapbox/walking',
+		geocoder: geocoder
+		});
+		
+
+navigator.geolocation.getCurrentPosition(onSuccess);
+function onSuccess(position) {
+        const {
+            latitude,
+            longitude
+        } = position.coords;
+        map.addControl(dir,'top-left');
+        console.log(longitude + "," +latitude)
+		dir.setOrigin(longitude + "," +latitude);
+		getlocate.trigger();
+    }
+
+
+</script>
+</body>
+</html>

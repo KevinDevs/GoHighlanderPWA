@@ -1,0 +1,36 @@
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<center><h3>If you are not redirected, this means you might not have the GoHighlander APP installed from App Store. <br/>Please go back and click on the first link to try the other method.<br/>Or try update GoHighlander from App Store.</h3></center>
+
+<center><div id="try-again"></div></center>
+
+<script>
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    
+    const redirParam = urlParams.get('scheme');
+
+    if (redirParam) {
+        // Create a link element
+        const link = document.createElement('a');
+        // Set the href attribute
+        link.href = redirParam;
+        // Set the text of the link
+        link.innerText = 'Try Again';
+        // Set link to act like a button
+        link.style.display = 'inline-block';
+        link.style.padding = '10px 20px';
+        link.style.margin = '10px';
+        link.style.background = 'blue';
+        link.style.color = 'white';
+        link.style.textDecoration = 'none';
+        link.style.borderRadius = '5px';
+
+        // Append the link to the div with id 'try-again'
+        document.getElementById('try-again').appendChild(link);
+    } else {
+        // Optionally handle the case where redirParam is not present
+        document.getElementById('try-again').innerText = 'No redirection link found.';
+    }
+    
+    window.location.href = redirParam;
+</script>

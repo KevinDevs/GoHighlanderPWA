@@ -1,0 +1,30 @@
+{
+  "width":500,
+  "type":2,
+  "logo":"parking-zone.jpg",
+  "layout":"blue",
+  "defaultFree":0,
+  "lots": {
+    "big_springs": {
+      "getdatafrom": "https:\/\/streetsoncloud.com\/parking\/rest\/occupancy\/id\/543"
+    },
+    "lot_6": {
+      "getdatafrom": "https:\/\/streetsoncloud.com\/parking\/rest\/occupancy\/id\/545"
+    },
+    "lot_24": {
+      "getdatafrom": "https:\/\/streetsoncloud.com\/parking\/rest\/occupancy\/id\/544"
+    },
+    "lot_26": {
+      "getdatafrom": "https:\/\/streetsoncloud.com\/parking\/rest\/occupancy\/id\/546"
+    },
+    "lot_30": {
+      "getdatafrom": "https:\/\/streetsoncloud.com\/parking\/rest\/occupancy\/id\/547"
+    },
+    "lot_32": {
+      "getdatafrom": "https:\/\/streetsoncloud.com\/parking\/rest\/occupancy\/id\/548"
+    },
+    "lot_50": {
+      "getdatafrom": "https:\/\/streetsoncloud.com\/parking\/rest\/occupancy\/id\/495"
+    }
+  }
+}

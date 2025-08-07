@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Parse ICS File</title>
+    <script src="gzip.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.0.4/pako.min.js" integrity="sha512-EAKzSKex+PXC0U9OG13r1059ysjrjkJEpZoONCnZa0mBROY28iBOOxZSErUVw1LzLr2+U5PhR7zPCPKidUVJqg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="qrcode.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head>
+  <body>
+	 <h3>Please go to the APP on your phone click <br/>[My Schedule -> + on top right -> Add With QR]<br/> to load this semester's courses to your GoHighlander Schedule</h3>
+	 <h4><ul>
+		 <li>If you opened this page on the device GoHighlander is running on:</li>
+		 <ul>
+			 <li>Take a screenshot and return to GoHighlander APP</li>
+		 </ul>
+		 <li>If you opened this page on another device, e.g. PC, iPad that GoHighlander is not running on:</li>
+		 <ul>
+			 <li>Use GoHighlander APP to scan this QR code below</li>
+		 </ul>
+	 </ul></h4>
+	<h4>Your class schedule and UCR E-mail is deleted from our inbox as soon as the QR-Code E-mail is sent. We do not keep a copy of any of your information on our server.</h4>
+	<div id="eventContainer" style="display:none">Loading...<br/><br/><b>Your Courses:</b><br/></div>
+	<!--<button class="btn btn-primary btn-lg btn-block" id="copyButton" onclick="copyText();" data-clipboard-text="" style="display:none">Copy Course Code</button>-->
+	
+	
+	<div id="qrcode"></div>
+
+    <script>
+	    const queryString = window.location.search;
+	    const urlParams = new URLSearchParams(queryString);
+	    
+	    const termParam = urlParams.get('term')
+		console.log(termParam);
+		
+		const coursesParam = urlParams.get('courses')
+		console.log(coursesParam);
+		
+		const coursesParamDecode = JSON.parse(coursesParam);
+
+	    
+		var rTermCode;
+		var termName = termParam.substring(0, termParam.lastIndexOf(".")).replace(/\s*\([^)]*\)\s*/g, "");
+		var coursesObj;
+		var addCourseObj = [];
+		var coursesData = [];
+		var totalCourses = coursesParamDecode.length;
+		var currCourses = 0;
+		
+		var qrCodeText = {};
+		qrCodeText['GH'] = "true";
+		qrCodeText["term"] = termName;
+		qrCodeText["courses"] = coursesParamDecode;
+		
+		new QRCode(document.getElementById("qrcode"), JSON.stringify(qrCodeText));
+		
+		function convertToJSON(array) {
+		  var objArray = [];
+		  for (var i = 1; i < array.length; i++) {
+		    objArray[i - 1] = {};
+		    for (var k = 0; k < array[0].length && k < array[i].length; k++) {
+		      var key = array[0][k];
+		      objArray[i - 1][key] = array[i][k]
+		    }
+		  }
+		
+		  return objArray;
+		}
+	</script>
+  </body>
+</html>

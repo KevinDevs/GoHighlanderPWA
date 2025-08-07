@@ -1,0 +1,692 @@
+<head>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+	<script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+	<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	<script src="ics.js"></script>
+	<script src="gzip.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.0.4/pako.min.js" integrity="sha512-EAKzSKex+PXC0U9OG13r1059ysjrjkJEpZoONCnZa0mBROY28iBOOxZSErUVw1LzLr2+U5PhR7zPCPKidUVJqg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.10/dist/clipboard.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/darkreader@4.9.58/darkreader.min.js"></script>
+<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/css/bootstrap-select.min.css">
+	
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/js/bootstrap-select.min.js"></script>
+
+	<style>
+		.card-header {
+		    background-color: rgb(0, 61, 165);
+		    color: white;
+		}
+		.progress-bar {
+		    background-color: rgb(0, 61, 165);
+		}
+		.row-pad {
+		    padding-bottom: 25px;
+		}
+		.parent { display: -ms-flex; display: -webkit-flex; display: flex; }
+		.parent>div { flex:1; }
+		
+		.row {
+		    margin-right: unset !important;
+		    margin-left: unset !important;
+		}
+		
+		.container, .container-fluid, .container-lg, .container-md, .container-sm, .container-xl, .container-xxl {
+		    padding-right: unset !important;
+		    padding-left: unset !important;
+		}
+		html, body {
+		  overscroll-behavior-y: none;
+		}
+		#codeButtons{
+			padding-right: 1.5rem !important;
+			padding-left: 1.5rem !important;
+		}
+		#codeButtons2{
+			padding-right: 1.5rem !important;
+			padding-left: 1.5rem !important;
+		}
+		#getFireBaseCode{
+			padding-right: 1.5rem !important;
+			padding-left: 1.5rem !important;
+		}
+	</style>
+</head>
+
+<div class="row" id="menuBar" style="z-index: 99999;position: sticky;background: rgb(0, 61, 165);top: 0;">
+		    <center>
+                 <div style="padding-top:10px">
+	                 <select class="terms" id="terms" data-live-search="true" style=" -ms-transform: translateY(-50%); margin: 0; position: absolute; top: 30%;; left: 50%; -ms-transform: translate(-50%, -50%); transform: translate(-50%, -50%); margin-left: auto; margin-right: auto;">
+								<option>Select Term</option>
+						</select>
+						<br/><br/>
+						</div>
+			<br/>
+		    </center>
+		   
+                </div> 
+
+<br/>
+<div id="courses" class="container-fluid row">
+		
+</div>
+
+<div class="container-fluid row" id="codeButtons">
+<button class="btn btn-primary btn-lg btn-block" onclick="downloadICS();">
+    Download ICS Calendar
+</button>
+<div><br/>
+</div>
+
+<button class="btn btn-primary btn-lg btn-block" onclick="setDefaultTerm();">
+    Set Default Term
+</button>
+<div><br/>
+</div>
+
+<div class="container-fluid row" id="fireBaseNotice" style="display:none">
+<button class="btn btn-primary btn-lg btn-block" onclick="saveData()">
+    Backup to Firebase
+</button>
+<center>Backup Now! Your current courses are out of sync from Firebase</center>
+<div><br/>
+</div>
+</div>
+
+</div>
+
+<div class="container-fluid row" id="getFireBaseCode" style="display:none">
+
+<button class="btn btn-primary btn-lg btn-block" onclick="getData(path)">
+    Retrieve from Firebase
+</button>
+<div><br/>
+</div>
+</div>
+
+<div class="container-fluid row" id="codeButtons2">
+<button class="btn btn-primary btn-lg btn-block" onclick="login()">
+    Login with Google
+</button>
+</div>
+<br/>
+
+<!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
+
+	
+<script>
+	//firebase setup
+	var uid;
+	var path;
+	
+    // Initialize Firebase
+    var firebaseConfig = {
+      // Add your Firebase project configuration here
+      apiKey: "AIzaSyDLr8YUiVjsD1O_giJljc50-K026QcA7Qs",
+      authDomain: "gohighlander-lite.firebaseapp.com",
+      projectId: "gohighlander-lite",
+      appId: "1:745336651818:web:468c11cc250f01b1cd0353"
+    };
+    firebase.initializeApp(firebaseConfig);
+    
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (user) {
+        console.log('User is already logged in!');
+        document.getElementById("codeButtons2").style.display = "none";
+        //document.getElementById("getFireBaseCode").style.display = null;
+        uid = user.uid;
+        path = 'users/'+uid+'/';
+        checkData(path);
+        console.log(user.email);
+      }
+    });
+    
+    // Save data under the user's account
+	function saveData() {
+		var fbData = {
+		  courseCode: generateCourseCode(),
+		};
+	  firebase.database().ref('users/' + uid).set(fbData)
+	    .then(function() {
+	      Swal.fire("Saved Courses to Firebase!");
+	      checkData(path);
+	    })
+	    .catch(function(error) {
+	      Swal.fire('Data could not be saved: '+error);
+	    });
+	}
+	
+	function getData(path) {
+	  return firebase.database().ref(path).once('value')
+	    .then(function(snapshot) {
+	      var data = snapshot.val();
+	      saveCourseCode(data['courseCode']);
+	    })
+	    .catch(function(error) {
+	      console.log('Error retrieving data:', error);
+	      return null;
+	    });
+	}
+	
+	function checkData(path) {
+	  return firebase.database().ref(path).once('value')
+	    .then(function(snapshot) {
+	      var data = snapshot.val();
+	      if(data != null){
+		      document.getElementById("getFireBaseCode").style.display = null;
+		      if(data["courseCode"] != generateCourseCode()){
+			      document.getElementById("fireBaseNotice").style.display = null;
+		      }else{
+			      document.getElementById("fireBaseNotice").style.display = "none";
+		      }
+	      }else{
+		      document.getElementById("getFireBaseCode").style.display = "none";
+	      }
+	    })
+	    .catch(function(error) {
+	      console.log('Error retrieving data:', error);
+	      return null;
+	    });
+	}
+    
+    
+    function login(){
+	  var provider = new firebase.auth.GoogleAuthProvider();
+
+      firebase.auth().signInWithPopup(provider)
+        .then(function(result) {
+          console.log('Successfully logged in with Google!');
+          uid = user.uid;
+          path = 'users/'+uid+'/';
+          document.getElementById("codeButtons2").style.display = "none";
+          document.getElementById("getFireBaseCode").style.display = null;
+          // Add your logic for redirecting to the next page
+        })
+        .catch(function(error) {
+          console.log(error.message);
+        });
+    }
+	
+	
+	
+	
+	//new ClipboardJS('.btn');
+	var cal = ics();
+	
+	var currPageTerm;
+	
+	//document.getElementById("coursecode").setAttribute("data-clipboard-text", generateCourseCode());
+	
+	
+	
+	function addSavedCourse(currTermName){
+		checkData(path);
+		cal = ics();
+		document.getElementById("courses").innerHTML = "";
+		document.getElementById("codeButtons").style.display = null;
+		//document.getElementById("codeButtons2").style.display = null;
+			
+	        if(getCookie(currTermName)){
+		        var courseDatas = JSON.parse(gzipToText(getCookie(currTermName)));
+	        }
+	        if(!courseDatas){
+		        document.getElementById("courses").innerHTML += '<center><h1>No courses added yet. Go add some in courses tab!</h1></center>';
+		        document.getElementById("codeButtons").style.display = "none";
+		        return;
+	        }
+	        if(courseDatas.length == 0){
+		        document.getElementById("courses").innerHTML += '<center><h1>No courses added yet. Go add some in courses tab!</h1></center>';
+		        document.getElementById("codeButtons").style.display = "none";
+		        return;
+	        }
+	       
+	        
+	        
+			courseDatas.sort(function(a, b) {
+			  var keyA = a.course.courseTitle;
+			  var keyB = b.course.courseTitle;
+			  if (keyA < keyB) return -1;
+			  if (keyA > keyB) return 1;
+			  return 0;
+			});
+	        
+			for(var i = 0; i < courseDatas.length;i++){
+						var currCourse = courseDatas[i]['course'];
+						
+						var color = currCourse['color'];
+						var description = currCourse['description'];
+						var courseTitle = currCourse['courseTitle'];
+						var building = currCourse['building'];
+						var room = currCourse['room'];
+						var room = currCourse['room'];
+						var type = currCourse['type'];
+						var facultyNames = currCourse['facultyNames'];
+						var m = currCourse['m'];
+						var t = currCourse['t'];
+						var w = currCourse['w'];
+						var th = currCourse['th'];
+						var f = currCourse['f'];
+						var sTime = currCourse['sTime'];
+						var eTime = currCourse['eTime'];
+						var sDate = currCourse['sDate'];
+						var eDate = currCourse['eDate'];
+						var courseNumber = currCourse['courseNumber'];
+						var secNumber = currCourse['secNumber'];
+						var termName = currCourse['term'];
+					
+					    var mStyle = "bg-primary";
+					    var tStyle = "bg-primary";
+					    var wStyle = "bg-primary";
+					    var thStyle = "bg-primary";
+					    var wStyle = "bg-primary";
+					    var fStyle = "bg-primary";
+					    var courseOccur = [];
+					    var calsDate = new Date(sDate + " " +time_convert_ics(sTime));
+						var caleDate = new Date(sDate + " " +time_convert_ics(eTime));
+						var newCalsDate = "";
+						var newCaleDate = "";
+					    if(!m){
+						    mStyle = "bg-secondary";
+						    
+					    }
+					    if(m){
+						    courseOccur.push("MO");
+						    
+						    newCalsDate = getNextDayOfWeek(calsDate,1);
+						    newCaleDate = getNextDayOfWeek(caleDate,1);
+						    //console.log(courseTitle + " " +newCalsDate)
+					    }
+					    
+					    if(!t){
+						    tStyle = "bg-secondary";
+						    
+					    }
+					    if(t){
+						    courseOccur.push("TU");
+						    if(!newCalsDate){
+							    newCalsDate = getNextDayOfWeek(calsDate,2);
+								newCaleDate = getNextDayOfWeek(caleDate,2);
+						    }
+					    }
+					    
+					    if(!w){
+						    wStyle = "bg-secondary";
+					    }
+					    if(w){
+						    courseOccur.push("WE");
+						    if(!newCalsDate){
+							    newCalsDate = getNextDayOfWeek(calsDate,3);
+								newCaleDate = getNextDayOfWeek(caleDate,3);
+						    }
+					    }
+					    
+					    if(!th){
+						    thStyle = "bg-secondary";
+						    
+					    }
+					    if(th){
+						    courseOccur.push("TH");
+						    if(!newCalsDate){
+							    newCalsDate = getNextDayOfWeek(calsDate,4);
+								newCaleDate = getNextDayOfWeek(caleDate,4);
+						    }
+					    }
+					    
+					    if(!f){
+						    fStyle = "bg-secondary";
+						    
+					    }
+					    if(f){
+						    courseOccur.push("FR");
+						    if(!newCalsDate){
+							    newCalsDate = getNextDayOfWeek(calsDate,5);
+								newCaleDate = getNextDayOfWeek(caleDate,5);
+						    }
+					    }
+					    
+					    
+					    
+					    //ics
+					    
+						var untilDate = new Date(eDate);
+						cal.addEvent(courseNumber, time_convert(sTime) +"-"+ time_convert(eTime) , currCourse['building'] + " " + room, newCalsDate, 								newCaleDate, {
+						  freq: 'WEEKLY',
+						  until: untilDate,
+						  interval: 1,
+						  byday: courseOccur
+						});
+					    
+					    //ui
+					    document.getElementById("courses").innerHTML += `
+								<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 row-pad parent">
+									<div class="card">
+										<h6 class="card-header" style="background:`+color+`">
+											`+description+`<br/>`+courseTitle+`
+										</h6>
+										<div class="card-body">
+											<p class="card-text">
+												Building: `+building+`<br/>
+												Room: `+room+`<br/>
+												Type: `+type+`<br/>
+												 `+facultyNames+`
+												<div class="d-inline p-1 `+mStyle+` text-white">M</div>
+												<div class="d-inline p-1 `+tStyle+` text-white">T</div>
+												<div class="d-inline p-1 `+wStyle+` text-white">W</div>
+												<div class="d-inline p-1 `+thStyle+` text-white">T</div>
+												<div class="d-inline p-1 `+fStyle+` text-white">F</div><br/>
+												`+time_convert(sTime)+` - `+time_convert(eTime)+`<br/>
+												`+sDate+` - `+eDate+`<br/>
+												`+termName+`
+											</p>
+										</div>
+										<div class="card-footer">
+												<button type="button" class="btn btn-danger btn-sm btn-block" onclick="removeCourse('`+courseNumber+`','`+secNumber+`', '`+currTermName+`')">Remove Course</button>
+										</div>
+									</div>
+								</div><br/>`;
+				}
+	}
+	
+	function removeCourse(courseNumber,secNumber,currTerm) {
+			var courseDatas = JSON.parse(gzipToText(getCookie(currTerm)));
+			for(var i = 0; i < courseDatas.length;i++){
+				cNum = courseDatas[i]['course']['courseNumber'];
+				sNum = courseDatas[i]['course']['secNumber'];
+				if(courseNumber == cNum && secNumber == sNum){
+					courseDatas.splice(i, 1);
+				}
+			}
+			eraseCookie(currTerm);
+			setCookie(currTerm,textToGzip(JSON.stringify(courseDatas)),999);
+			//document.getElementById("coursecode").setAttribute("data-clipboard-text", generateCourseCode());
+			/*Swal.fire(
+			  'Success',
+			  'Course Removed',
+			  'success'
+			)*/
+			//addSavedCourse(currTerm)
+	}
+	function setCookie(cname, cvalue, exdays) {
+	  const d = new Date();
+	  d.setTime(d.getTime() + (exdays*24*60*60*1000));
+	  let expires = "expires="+ d.toUTCString();
+	  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+	}
+	
+	function getCookie(cname) {
+	  let name = cname + "=";
+	  let decodedCookie = decodeURIComponent(document.cookie);
+	  let ca = decodedCookie.split(';');
+	  for(let i = 0; i <ca.length; i++) {
+	    let c = ca[i];
+	    while (c.charAt(0) == ' ') {
+	      c = c.substring(1);
+	    }
+	    if (c.indexOf(name) == 0) {
+	      return c.substring(name.length, c.length);
+	    }
+	  }
+	  return "";
+	}
+	
+	function eraseCookie(name) {   
+    	document.cookie = name+'=; Max-Age=-99999999;';  
+	}
+	
+	function time_convert(num)
+	 { 
+	  var hours = Math.floor(num / 100);  
+	  var suffix = hours >= 12 ? "PM":"AM";
+	  hours = ((hours + 11) % 12 + 1)
+	  var minutes = Math.floor(num % 100);
+	  if(minutes == 0){
+		  minutes = "00"
+	  }
+	  return hours + ":" + minutes + suffix;         
+	}
+	
+	function time_convert_ics(num)
+	 { 
+	  var hours = Math.floor(num / 100);  
+	  var minutes = Math.floor(num % 100);
+	  if(minutes == 0){
+		  minutes = "00"
+	  }
+	  return hours + ":" + minutes;
+	}
+	
+	var checkCookie = function() {
+		
+	    var lastCookie = document.cookie;
+	
+	    return function() {
+	
+	        var currentCookie = document.cookie;
+	
+	        if (currentCookie != lastCookie) {
+	
+	            loadTerms();
+				addSavedCourse(currPageTerm);
+	            lastCookie = currentCookie; 
+	
+	        }
+	    };
+	}();
+	window.setInterval(checkCookie, 100);
+	
+	function copyText(){
+
+    
+	    Swal.fire({
+	        icon: 'success',
+	        title: 'Course code copied!',
+	        text: "Make sure to save it somewhere safe. Course code changes everytime when you add or remove a course so make sure to save it again when you did.",
+	        showConfirmButton: true
+	    });
+    
+	}
+	
+	async function enterCCode(){
+			
+		const { value: formValues } = await Swal.fire({
+		  title: 'Enter your code code here:',
+		  html:
+		    '<input id="courseCodeEnter" class="swal1-input">',
+		  focusConfirm: false,
+		  preConfirm: () => {
+		    return [
+		      document.getElementById('courseCodeEnter').value
+		    ]
+		  }
+		})
+		
+		if (formValues) {
+		  try{
+			  	if(!formValues[0] || formValues[0] == " "){
+				  	Swal.fire("Invalid Course Code");
+				  	return;
+			  	}
+				saveCourseCode(formValues[0]);
+				loadTerms();
+				Swal.fire("Successfully Added Course!");
+		   }catch{
+				Swal.fire("Invalid Course Code");
+		   }
+		}
+	}
+	
+	function getNextDayOfWeek(date, dayOfWeek) {
+	
+	    var resultDate = new Date(date.getTime());
+	
+	    resultDate.setDate(date.getDate() + (7 + dayOfWeek - date.getDay()) % 7);
+	
+	    return resultDate;
+	}
+	
+	function isIos() {
+	  return [
+	    'iPad Simulator',
+	    'iPhone Simulator',
+	    'iPod Simulator',
+	    'iPad',
+	    'iPhone',
+	    'iPod'
+	  ].includes(navigator.platform)
+	  // iPad on iOS 13 detection
+	  || (navigator.userAgent.includes("Mac") && "ontouchend" in document)
+	}
+	
+	function downloadICS(){
+		//cal.download("Schedule");
+		if (isIos()) { window.open("data:text/calendar;charset=utf8," + escape(cal.build())); } else { cal.download("Schedule"); }
+	}
+	
+	// Function to log all cookies
+	function generateCourseCode() {
+	  // Get all cookies
+	  var cookies = document.cookie.split(";");
+	
+	  // Concatenate cookies into a single string
+	  var cookiesString = cookies.join("; ");
+	
+	  // Log all cookies as a single string
+	  return cookiesString;
+	}
+	
+	
+	// Function to save cookies with expiration
+	function saveCourseCode(cookiesString) {
+	  // Split the cookies string into individual cookies
+	  var cookies = cookiesString.split(";");
+	
+	  // Save each cookie
+	  for (var i = 0; i < cookies.length; i++) {
+	    if(!getCookie("termsData")){
+		    var cookie = cookies[i].trim();
+		    // Split the cookie into name and value
+		    var parts = cookie.split("=");
+		    var name = parts.shift();
+		    var value = parts.join("=");
+		
+		    // Set the cookie with expiration of 999 days
+		    var expirationDate = new Date();
+		    expirationDate.setDate(expirationDate.getDate() + 999);
+		    var expires = "; expires=" + expirationDate.toUTCString();
+		
+		    // Set the cookie with expiration
+		    document.cookie = name + "=" + value + expires;
+	    }else{
+		    var cookie = cookies[i].trim();
+		    // Split the cookie into name and value
+		    var parts = cookie.split("=");
+		    var name = parts.shift();
+		    var value = parts.join("=");
+		    
+		    eraseCookie(name);
+			setCookie(name,value,999);
+	    }
+	  }
+	  loadTerms();
+	  Swal.fire("Loaded Courses From Firebase!");
+	}
+	
+	function loadTerms(){
+		$('.terms').selectpicker('destroy');
+		document.getElementById("terms").innerHTML = '<option>Select Term</option>';
+		
+		//get current terms and select picker
+		if(getCookie("termsData")){
+			var termsCookie = getCookie("termsData");
+			var termsJSON = JSON.parse(termsCookie);
+			//set initial page
+			document.getElementById("courses").innerHTML = '<center><h1>Please select a term above</h1></center>';
+			document.getElementById("codeButtons").style.display = "none";
+			//document.getElementById("codeButtons2").style.display = "none";
+			
+			for(var term of termsJSON){
+				document.getElementById("terms").innerHTML += '<option data-tokens="'+ term +'">' + term + '</option>';
+			}
+			$('.terms').selectpicker();
+			
+			if(getCookie("defaultTerm")){
+				var defaultTerm = getCookie("defaultTerm");
+				$('.terms').selectpicker('val', defaultTerm);
+				currPageTerm = defaultTerm;
+				addSavedCourse(defaultTerm);
+			}
+			
+			$('.terms').each(function() {
+			   var elem = $(this);
+			
+			   elem.data('oldVal', elem.val());
+			
+			   elem.bind("propertychange change click keyup input paste", function(event){
+			      if (elem.data('oldVal') != elem.val()) {
+			       elem.data('oldVal', elem.val());
+				   
+			       if(elem.val() == "Select Term"){
+				    document.getElementById("courses").innerHTML = '<center><h1>Please select a term above</h1></center>';
+			        document.getElementById("codeButtons").style.display = "none";
+			        //document.getElementById("codeButtons2").style.display = "none";
+			       }else{
+				       currPageTerm = elem.val();
+				       addSavedCourse(elem.val());
+			       }
+			     }
+			   });
+			 });
+		}else{
+			$('.terms').selectpicker();
+			document.getElementById("courses").innerHTML += '<center><h1>No courses added yet. Go add some in courses tab!</h1></center>';
+			document.getElementById("codeButtons").style.display = "none";
+		}
+	}
+	loadTerms();
+	
+	function setDefaultTerm(){
+		if(getCookie("termsData")){
+			const inputOptions = JSON.parse(getCookie("termsData"))
+			
+			const selectedTerm = Swal.fire({
+			  title: 'Select Term',
+			  input: 'select',
+			  inputOptions: inputOptions,
+			  inputValidator: (value) => {
+			    if (!value) {
+			      return 'You need to choose something!'
+			    }else{
+				    var selectedTerm = inputOptions[value];
+				    if(getCookie("defaultTerm")){
+					    eraseCookie("defaultTerm");
+						setCookie("defaultTerm",selectedTerm,999);
+				    }else{
+					    setCookie("defaultTerm",selectedTerm,999);
+				    }
+			    }
+			  }
+			})
+			
+			
+		}
+	}
+
+	
+	DarkReader.auto({
+	    brightness: 100,
+	    contrast: 100
+	});
+</script>
+<script>
+		//swipe right detection
+document.addEventListener('swiped-right', function(e) {
+			   window.parent.$('#iframeModal').modal('hide');
+            });
+	</script>
+	<script src="/pwa/swipe.js"></script>

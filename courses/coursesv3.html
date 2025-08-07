@@ -1,0 +1,1079 @@
+<head>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+	<script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+	<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/css/bootstrap-select.min.css">
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/js/bootstrap-select.min.js"></script>
+<script src="gzip.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.0.4/pako.min.js" integrity="sha512-EAKzSKex+PXC0U9OG13r1059ysjrjkJEpZoONCnZa0mBROY28iBOOxZSErUVw1LzLr2+U5PhR7zPCPKidUVJqg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdn.jsdelivr.net/npm/darkreader@4.9.58/darkreader.min.js"></script>
+	<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<style>
+		.card-header {
+		    background-color: rgb(0, 61, 165);
+		    color: white;
+		}
+		.progress-bar {
+		    background-color: rgb(0, 61, 165);
+		}
+		.row-pad {
+		    padding-bottom: 25px;
+		}
+		.parent { display: -ms-flex; display: -webkit-flex; display: flex; }
+		.parent>div { flex:1; }
+		
+		.row {
+		    margin-right: unset !important;
+		    margin-left: unset !important;
+		}
+		
+		.container, .container-fluid, .container-lg, .container-md, .container-sm, .container-xl, .container-xxl {
+		    padding-right: unset !important;
+		    padding-left: unset !important;
+		}
+		html, body {
+		  overscroll-behavior-y: none;
+		}
+	</style>
+</head>
+<div id="courseFind" style=" z-index: 99999; position: sticky; background: rgb(0, 61, 165); top: 0px; display:none ">
+<center>
+	<div style="padding-top: 10px;">
+	<select class="terms" id="terms" data-live-search="true" data-live-search-style="startsWith">
+		<option>Select Term</option>
+	</select>
+	</div>
+	
+	<div style="padding-top: 10px;">
+	<select class="subjects" id="subjects" data-live-search="true" data-hide-disabled=true disabled="disabled">
+		<option>Select Subject</option>
+	</select>
+	</div>
+	
+	<div style="padding-top: 10px;">
+	<select class="course" id="course" data-live-search="true" data-hide-disabled=true disabled="disabled">
+		<option>Select Subject First</option>
+	</select>
+	</div>
+	
+	<div style="padding-top: 10px;">
+	<select class="section" id="section" data-live-search="true" data-hide-disabled=true disabled="disabled">
+		<option>Select Course First</option>
+	</select>
+	</div>
+
+	<!--<input id="course" name="course" class="form-control" placeholder="ENTER COURSE ID" style="
+    display: unset;
+    width: unset;
+">--><br/><br/>
+<!--<button class="btn btn-primary" id="submit_email" onclick="find()">SUBMIT</button>-->
+</center>
+</div>
+
+<div id="loading" style=" z-index: 99999; position: sticky; background: rgb(0, 61, 165); top: 0px; ">
+<center>
+	<h1 style="color:white">Working on it... Please wait</h1>
+	<div class="spinner-border text-light" role="status">
+	</div>
+	<br/>
+	<br/>
+<!--<button class="btn btn-primary" id="submit_email" onclick="find()">SUBMIT</button>-->
+</center>
+</div>
+
+<div id="error" style=" z-index: 99999; position: sticky; background: rgb(0, 61, 165); top: 0px; display:none ">
+<center>
+	<h1 style="color:white">Failed to fetch, refresh to try again.</h1>
+	<button type="button" onClick="location.reload()" class="btn btn-primary">Try Again</button>
+	<br/>
+<!--<button class="btn btn-primary" id="submit_email" onclick="find()">SUBMIT</button>-->
+</center>
+</div>
+<br/>
+
+<div id="courses" class="container-fluid row">
+		
+</div>
+	
+<script>
+	//var course = "csn110";
+	
+	var subjects = [];
+	var courseObj = [];
+	var terms = [];
+	var term = "";
+	var termName = "";
+	
+	function getLatestTerm(){
+			fetch('https://ucrapi.justinf.dev/api/v1/terms.json')
+		      .then((response) => response.json())
+		      .then((data) => {
+			    //TERM OVERRIDE
+			    term = data[0];
+			    //term = data[1];
+			    termName = term["description"].replace(' (View Only)','');
+			    getSubjects();
+		        
+		      })
+		      .catch(() => {
+		        //alert("There was an error loading tracks.");
+		        //window.location.reload();
+		      })
+	}
+	//getLatestTerm();
+	
+	function getTerms(){
+		if(terms == 0){
+			
+			fetch('https://ucrapi.justinf.dev/api/v1/terms.json')
+		      .then((response) => response.json())
+		      .then((data) => {
+		        var termdata = data;
+				for (var i = 0; i < termdata.length; i++) {
+					termdata[i]['description'] = termdata[i]['description'].replace(' (View Only)','');
+					terms.push(termdata[i]);
+					document.getElementById("courseFind").style.display=null;
+					document.getElementById("loading").style.display="none";
+					document.getElementById("terms").innerHTML += '<option data-tokens="'+termdata[i]['description'] +'">'+termdata[i]['description']+'</option>';
+					
+				}
+				$('.terms').selectpicker();
+				
+				//subject
+			   $('.subjects').selectpicker();
+			   
+		      })
+		      .catch(() => {
+		        //alert("There was an error loading tracks.");
+		        //window.location.reload();
+		        document.getElementById("error").style.display=null;
+		        document.getElementById("loading").style.display="none";
+		      })
+		}
+	}
+	getTerms();
+	
+	
+	function getSubjects(){
+		if(true){
+			
+			fetch('https://ucrapi.justinf.dev/api/v1/'+term+'/subjects.json')
+		      .then((response) => response.json())
+		      .then((data) => {
+		        var subjectdata = data;
+		        document.getElementById("subjects").innerHTML = "<option>Select Subject</option>";
+				for (var i = 0; i < subjectdata.length; i++) {
+					subjects.push(subjectdata[i]['code']);
+					document.getElementById("courseFind").style.display=null;
+					document.getElementById("loading").style.display="none";
+					document.getElementById("subjects").innerHTML += '<option data-tokens="'+subjectdata[i]['code'] +'">'+subjectdata[i]['code']+'</option>';
+					
+				}
+				$('.subjects').selectpicker('destroy');
+				$('.subjects').selectpicker();
+		      })
+		      .catch(() => {
+		        //alert("There was an error loading tracks.");
+		        //window.location.reload();
+		        document.getElementById("error").style.display=null;
+		        document.getElementById("loading").style.display="none";
+		      })
+		}
+	}
+	
+	//initialize first for prompt
+	$('.course').selectpicker();
+	function getSubjDetails(subj){
+		document.getElementById("course").innerHTML = "";
+		$('.course').selectpicker('destroy');
+		document.getElementById("course").disabled = false;
+		
+		if(!subj || !subjects.includes(subj)){
+		      //showAllSubj(data);
+			    Swal.fire(
+				  'Error',
+				  'Course not found.',
+				  'warning'
+				)
+				document.getElementById("course").value = "";
+			  return;
+			}
+			
+			if(courseObj[subj]){
+				courses = courseObj[subj];
+			    
+			    var added = 0;
+			    document.getElementById("course").innerHTML = "<option>Select Course</option>";
+			    for (var i = 0; i < courses.length; i++) {
+				    var addHTML = '<option data-tokens="'+courses[i]['courseNumber']+' ">'+courses[i]['courseNumber']+'</option>';
+					if(!document.getElementById("course").innerHTML.includes(addHTML)){
+						document.getElementById("course").innerHTML += addHTML;
+						added++;
+					}
+					
+				}
+			   $('.course').selectpicker();
+			}else{
+				document.getElementById("loading").style.display=null;
+				document.getElementById("courseFind").style.display="none";
+				fetch('https://ucrapi.justinf.dev/api/v1/'+term+'/'+subj+'.json')
+	      .then((response) => response.json())
+	      .then((data) => {
+		      var courses = data['data']
+			    courseObj[subj] = courses;
+			    
+			    var added = 0;
+			    document.getElementById("course").innerHTML = "<option>Select Course</option>";
+			    for (var i = 0; i < courses.length; i++) {
+				    var addHTML = '<option data-tokens="'+courses[i]['courseNumber']+' ">'+courses[i]['courseNumber']+'</option>';
+					if(!document.getElementById("course").innerHTML.includes(addHTML)){
+						document.getElementById("course").innerHTML += addHTML;
+						added++;
+					}
+					
+				}
+			   $('.course').selectpicker();
+			   document.getElementById("loading").style.display="none";
+			   document.getElementById("courseFind").style.display=null;
+			   //console.log(courses.length)
+			    //find()
+	        	
+	      })
+	      .catch(() => {
+	        //alert("There was an error loading tracks.");
+	        //window.location.reload();
+	        Swal.fire(
+			  'Error',
+			  'Course not found.',
+			  'warning'
+			)
+			document.getElementById("error").style.display=null;
+			document.getElementById("course").value = "";
+			  return;
+	      })
+			}
+		  
+	}
+	
+	$('.section').selectpicker();
+	
+	
+	
+	function find(){
+		//course
+		document.getElementById("courses").innerHTML = "";
+		var e = document.getElementById("subjects");
+		
+		//section
+		document.getElementById("section").innerHTML = "";
+				$('.section').selectpicker('destroy');
+				document.getElementById("section").disabled = false;
+		
+		//get course & check
+		var course = e.value+document.getElementById("course").value;
+		if(!course){
+			alert("Nothing Entered");
+			return
+		}
+		
+		var subj = "";
+		var courseNum = "";
+		var subjFinish = false;
+		
+		course = course.replace(/\s/g, '');
+		
+		for (var i = 0; i < course.length; i++) {
+		  var currChar = course.charAt(i);
+		  var nextChar = course.charAt(i+1);
+		  if(!subjFinish){
+			  if(isLetter(currChar)){
+				  currChar = currChar.toUpperCase();
+				  subj+=currChar;
+				  if(isNumber(nextChar)){
+					  subjFinish = true;
+				  }
+			  }
+		  }else{
+			  currChar = currChar.toUpperCase();
+			  courseNum += currChar;
+		  }
+		}
+		
+	      if(!courseObj[subj]){
+		      getSubjDetails(subj);
+		      return;
+	      }
+	      
+	      var courses = courseObj[subj];
+	        var found = false;
+	        document.getElementById("section").innerHTML += '<option >Select Section</option>';
+			for (var i = 0; i < courses.length; i++) {
+				var currCourse = courses[i];
+
+				if(currCourse['courseNumber'] == courseNum){
+					found = true;
+						var courseNumber = currCourse['subject']+currCourse['courseNumber'];
+						var secNumber = currCourse['sequenceNumber'];
+						var courseTitle =  courseNumber +" - "+secNumber;
+					    var description = currCourse['courseTitle'];
+					    var faculty = currCourse['faculty'];
+					    var building = currCourse['meetingsFaculty'][0]['meetingTime']['buildingDescription']
+					    var room = currCourse['meetingsFaculty'][0]['meetingTime']['room']
+					    var type = currCourse['scheduleTypeDescription']
+					    var sTime = time_convert(currCourse['meetingsFaculty'][0]['meetingTime']['beginTime'])
+					    var eTime = time_convert(currCourse['meetingsFaculty'][0]['meetingTime']['endTime'])
+					    var sDate = currCourse['meetingsFaculty'][0]['meetingTime']['startDate']
+					    var eDate = currCourse['meetingsFaculty'][0]['meetingTime']['endDate']
+					    var m = currCourse['meetingsFaculty'][0]['meetingTime']['monday']
+					    var t = currCourse['meetingsFaculty'][0]['meetingTime']['tuesday']
+					    var w = currCourse['meetingsFaculty'][0]['meetingTime']['wednesday']
+					    var th = currCourse['meetingsFaculty'][0]['meetingTime']['thursday']
+					    var f = currCourse['meetingsFaculty'][0]['meetingTime']['friday']
+					    var mStyle = "bg-primary";
+					    var tStyle = "bg-primary";
+					    var wStyle = "bg-primary";
+					    var thStyle = "bg-primary";
+					    var wStyle = "bg-primary";
+					    var fStyle = "bg-primary";
+					    if(!m){
+						    mStyle = "bg-secondary";
+					    }
+					    if(!t){
+						    tStyle = "bg-secondary";
+					    }
+					    if(!w){
+						    wStyle = "bg-secondary";
+					    }
+					    if(!th){
+						    thStyle = "bg-secondary";
+					    }
+					    if(!f){
+						    fStyle = "bg-secondary";
+					    }
+					    var facultyNames = "";
+					    for(var j = 0; j < faculty.length;j++){
+						    var facEmail = faculty[j]['emailAddress'];
+						    var name = faculty[j]['displayName'];
+						    var primary = faculty[j]['primaryIndicator'];
+						    var primaryName = "";
+						    if(primary){
+							    primaryName = "Primary ";
+						    }
+						    if(faculty.length == 1){
+								facultyNames += primaryName+"Instructor: <a href='https://www.ratemyprofessors.com/search/teachers?query="+name+"&sid=U2Nob29sLTEwNzY=' target=\"_blank\"> " + name + "</a>";
+						    }else{
+							    facultyNames += primaryName+"Instructor: <a href='https://www.ratemyprofessors.com/search/teachers?query="+name+"&sid=U2Nob29sLTEwNzY=' target=\"_blank\"> " + name + "</a>"+"<br/> ";
+						    }
+						    
+						    if(j == faculty.length){
+							    facultyNames += primaryName+"Instructor: <a href='https://www.ratemyprofessors.com/search/teachers?query="+name+"&sid=U2Nob29sLTEwNzY=' target=\"_blank\"> " + name + "</a>";
+						    }
+					    }
+					    if(type == "Lecture"){
+						    color = "rgb(0, 61, 165)";
+					    }else{
+						    color = "rgb(62 91 141)";
+					    }
+					    document.getElementById("courses").innerHTML += `
+								<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 row-pad parent">
+									<div class="card">
+										<h6 class="card-header" style="background:`+color+`">
+											`+description+`<br/>`+courseTitle+`
+										</h6>
+										<div class="card-body">
+											<p class="card-text">
+												Building: `+building+`<br/>
+												Room: `+room+`<br/>
+												Type: `+type+`<br/>
+												 `+facultyNames+`<br/>
+												<div class="d-inline p-1 `+mStyle+` text-white">M</div>
+												<div class="d-inline p-1 `+tStyle+` text-white">T</div>
+												<div class="d-inline p-1 `+wStyle+` text-white">W</div>
+												<div class="d-inline p-1 `+thStyle+` text-white">T</div>
+												<div class="d-inline p-1 `+fStyle+` text-white">F</div><br/>
+												`+sTime+` - `+eTime+`<br/>
+												`+sDate+` - `+eDate+`<br/>
+												`+termName+`
+											</p>
+										</div>
+										<div class="card-footer">
+												<button type="button" class="btn btn-primary btn-lg btn-block" onclick="addCourse('`+courseNumber+`','`+secNumber+`')">Save Course</button>
+										</div>
+									</div>
+								</div><br/>`;
+								document.getElementById("section").innerHTML += '<option data-tokens="'+secNumber+' ">'+secNumber+'</option>';
+				}//endif
+				//add section field
+			}//endfor
+			$('.section').selectpicker();
+			if(!found){
+		      //showAllSubj(data);
+		      Swal.fire(
+				  'Error',
+				  'Course not found.',
+				  'warning'
+				)
+				document.getElementById("error").style.display=null;
+				document.getElementById("course").value = "";
+				  return;
+			}
+	}
+	
+	function findsec(sectNum){
+		//course
+		document.getElementById("courses").innerHTML = "";
+		var e = document.getElementById("subjects");
+		
+		
+		//get course & check
+		var course = e.value+document.getElementById("course").value;
+		if(!course){
+			alert("Nothing Entered");
+			return
+		}
+		
+		var subj = "";
+		var courseNum = "";
+		var subjFinish = false;
+		
+		course = course.replace(/\s/g, '');
+		
+		for (var i = 0; i < course.length; i++) {
+		  var currChar = course.charAt(i);
+		  var nextChar = course.charAt(i+1);
+		  if(!subjFinish){
+			  if(isLetter(currChar)){
+				  currChar = currChar.toUpperCase();
+				  subj+=currChar;
+				  if(isNumber(nextChar)){
+					  subjFinish = true;
+				  }
+			  }
+		  }else{
+			  currChar = currChar.toUpperCase();
+			  courseNum += currChar;
+		  }
+		}
+		
+	      if(!courseObj[subj]){
+		      getSubjDetails(subj);
+		      return;
+	      }
+	      
+	      var courses = courseObj[subj];
+	        var found = false;
+			for (var i = 0; i < courses.length; i++) {
+				var currCourse = courses[i];
+
+				if(currCourse['courseNumber'] == courseNum && currCourse['sequenceNumber'] == sectNum){
+					found = true;
+						var courseNumber = currCourse['subject']+currCourse['courseNumber'];
+						var secNumber = currCourse['sequenceNumber'];
+						var courseTitle =  courseNumber +" - "+secNumber;
+					    var description = currCourse['courseTitle'];
+					    var faculty = currCourse['faculty'];
+					    var building = currCourse['meetingsFaculty'][0]['meetingTime']['buildingDescription']
+					    var room = currCourse['meetingsFaculty'][0]['meetingTime']['room']
+					    var type = currCourse['scheduleTypeDescription']
+					    var sTime = time_convert(currCourse['meetingsFaculty'][0]['meetingTime']['beginTime'])
+					    var eTime = time_convert(currCourse['meetingsFaculty'][0]['meetingTime']['endTime'])
+					    var sDate = currCourse['meetingsFaculty'][0]['meetingTime']['startDate']
+					    var eDate = currCourse['meetingsFaculty'][0]['meetingTime']['endDate']
+					    var m = currCourse['meetingsFaculty'][0]['meetingTime']['monday']
+					    var t = currCourse['meetingsFaculty'][0]['meetingTime']['tuesday']
+					    var w = currCourse['meetingsFaculty'][0]['meetingTime']['wednesday']
+					    var th = currCourse['meetingsFaculty'][0]['meetingTime']['thursday']
+					    var f = currCourse['meetingsFaculty'][0]['meetingTime']['friday']
+					    var mStyle = "bg-primary";
+					    var tStyle = "bg-primary";
+					    var wStyle = "bg-primary";
+					    var thStyle = "bg-primary";
+					    var wStyle = "bg-primary";
+					    var fStyle = "bg-primary";
+					    if(!m){
+						    mStyle = "bg-secondary";
+					    }
+					    if(!t){
+						    tStyle = "bg-secondary";
+					    }
+					    if(!w){
+						    wStyle = "bg-secondary";
+					    }
+					    if(!th){
+						    thStyle = "bg-secondary";
+					    }
+					    if(!f){
+						    fStyle = "bg-secondary";
+					    }
+					    var facultyNames = "";
+					    for(var j = 0; j < faculty.length;j++){
+						    var facEmail = faculty[j]['emailAddress'];
+						    var name = faculty[j]['displayName'];
+						    var primary = faculty[j]['primaryIndicator'];
+						    var primaryName = "";
+						    if(primary){
+							    primaryName = "Primary ";
+						    }
+						    if(faculty.length == 1){
+								facultyNames += primaryName+"Instructor: <a href='https://www.ratemyprofessors.com/search/teachers?query="+name+"&sid=U2Nob29sLTEwNzY=' target=\"_blank\"> " + name + "</a>";
+						    }else{
+							    facultyNames += primaryName+"Instructor: <a href='https://www.ratemyprofessors.com/search/teachers?query="+name+"&sid=U2Nob29sLTEwNzY=' target=\"_blank\"> " + name + "</a>"+"<br/> ";
+						    }
+						    
+						    if(j == faculty.length){
+							    facultyNames += primaryName+"Instructor: <a href='https://www.ratemyprofessors.com/search/teachers?query="+name+"&sid=U2Nob29sLTEwNzY=' target=\"_blank\"> " + name + "</a>";
+						    }
+					    }
+					    if(type == "Lecture"){
+						    color = "rgb(0, 61, 165)";
+					    }else{
+						    color = "rgb(62 91 141)";
+					    }
+					    document.getElementById("courses").innerHTML += `
+								<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 row-pad parent">
+									<div class="card">
+										<h6 class="card-header" style="background:`+color+`">
+											`+description+`<br/>`+courseTitle+`
+										</h6>
+										<div class="card-body">
+											<p class="card-text">
+												Building: `+building+`<br/>
+												Room: `+room+`<br/>
+												Type: `+type+`<br/>
+												 `+facultyNames+`
+												<div class="d-inline p-1 `+mStyle+` text-white">M</div>
+												<div class="d-inline p-1 `+tStyle+` text-white">T</div>
+												<div class="d-inline p-1 `+wStyle+` text-white">W</div>
+												<div class="d-inline p-1 `+thStyle+` text-white">T</div>
+												<div class="d-inline p-1 `+fStyle+` text-white">F</div><br/>
+												`+sTime+` - `+eTime+`<br/>
+												`+sDate+` - `+eDate+`<br/>
+												`+termName+`
+											</p>
+										</div>
+										<div class="card-footer">
+												<button type="button" class="btn btn-primary btn-lg btn-block" onclick="addCourse('`+courseNumber+`','`+secNumber+`')">Save Course</button>
+										</div>
+									</div>
+								</div><br/>`;
+				}//endif
+			}//endfor
+			if(!found){
+		      //showAllSubj(data);
+		      Swal.fire(
+				  'Error',
+				  'Course not found.',
+				  'warning'
+				)
+				document.getElementById("error").style.display=null;
+				document.getElementById("course").value = "";
+				  return;
+			}
+	}
+	
+	function addCourse0(courseNum,secNum){
+		var course = {course: {}};
+		course.course['courseNum'] = courseNum;
+		course.course['secNum'] = secNum;
+		saveCourseToCookie(course);
+		
+	}
+	
+		function addCourse(course,secNum){
+		
+		var subj = "";
+		var courseNum = "";
+		var subjFinish = false;
+		
+		course = course.replace(/\s/g, '');
+		
+		for (var i = 0; i < course.length; i++) {
+		  var currChar = course.charAt(i);
+		  var nextChar = course.charAt(i+1);
+		  if(!subjFinish){
+			  if(isLetter(currChar)){
+				  currChar = currChar.toUpperCase();
+				  subj+=currChar;
+				  if(isNumber(nextChar)){
+					  subjFinish = true;
+				  }
+			  }
+		  }else{
+			  currChar = currChar.toUpperCase();
+			  courseNum += currChar;
+		  }
+		}
+		
+		
+		
+	      if(!courseObj[subj]){
+		      getSubjDetails(subj);
+		      return;
+	      }
+	      
+	      var courses = courseObj[subj];
+	        var found = false;
+			for (var i = 0; i < courses.length; i++) {
+				var currCourse = courses[i];
+
+				if(currCourse['courseNumber'] == courseNum && currCourse['sequenceNumber'] == secNum){
+					found = true;
+						var courseNumber = currCourse['subject']+currCourse['courseNumber'];
+						var secNumber = currCourse['sequenceNumber'];
+						var courseTitle =  courseNumber +" - "+secNumber;
+					    var description = currCourse['courseTitle'];
+					    var faculty = currCourse['faculty'];
+					    var building = currCourse['meetingsFaculty'][0]['meetingTime']['buildingDescription']
+					    var room = currCourse['meetingsFaculty'][0]['meetingTime']['room']
+					    var type = currCourse['scheduleTypeDescription']
+					    var sTime = currCourse['meetingsFaculty'][0]['meetingTime']['beginTime']
+					    var eTime = currCourse['meetingsFaculty'][0]['meetingTime']['endTime']
+					    var sDate = currCourse['meetingsFaculty'][0]['meetingTime']['startDate']
+					    var eDate = currCourse['meetingsFaculty'][0]['meetingTime']['endDate']
+					    var m = currCourse['meetingsFaculty'][0]['meetingTime']['monday']
+					    var t = currCourse['meetingsFaculty'][0]['meetingTime']['tuesday']
+					    var w = currCourse['meetingsFaculty'][0]['meetingTime']['wednesday']
+					    var th = currCourse['meetingsFaculty'][0]['meetingTime']['thursday']
+					    var f = currCourse['meetingsFaculty'][0]['meetingTime']['friday']
+					    var mStyle = "bg-primary";
+					    var tStyle = "bg-primary";
+					    var wStyle = "bg-primary";
+					    var thStyle = "bg-primary";
+					    var wStyle = "bg-primary";
+					    var fStyle = "bg-primary";
+					    if(!m){
+						    mStyle = "bg-secondary";
+					    }
+					    if(!t){
+						    tStyle = "bg-secondary";
+					    }
+					    if(!w){
+						    wStyle = "bg-secondary";
+					    }
+					    if(!th){
+						    thStyle = "bg-secondary";
+					    }
+					    if(!f){
+						    fStyle = "bg-secondary";
+					    }
+					    var facultyNames = "";
+					    for(var j = 0; j < faculty.length;j++){
+						    var facEmail = faculty[j]['emailAddress'];
+						    var name = faculty[j]['displayName'];
+						    var primary = faculty[j]['primaryIndicator'];
+						    var primaryName = "";
+						    if(primary){
+							    primaryName = "Primary ";
+						    }
+						    if(faculty.length == 1){
+								facultyNames += primaryName+"Instructor: <a href='mailto:"+facEmail+"'> " + name + "</a>";
+						    }else{
+							    facultyNames += primaryName+"Instructor: <a href='mailto:"+facEmail+"'> " + name + "</a>"+"<br/> ";
+						    }
+						    
+						    if(j == faculty.length){
+							    facultyNames += primaryName+"Instructor: <a href='mailto:"+facEmail+"'> " + name + "</a>";
+						    }
+					    }
+					    if(type == "Lecture"){
+						    color = "rgb(0, 61, 165)";
+					    }else{
+						    color = "rgb(62 91 141)";
+					    }
+					    var courseData = {course: {}};
+					    courseData.course["color"] = color;
+					    courseData.course["description"] = description;
+						courseData.course["courseTitle"] = courseTitle;
+					    courseData.course["building"] = building;
+					    courseData.course["room"] = room;
+					    courseData.course["type"] = type;
+					    courseData.course["facultyNames"] = facultyNames;
+					    courseData.course["m"] = m;
+					    courseData.course["t"] = t;
+					    courseData.course["w"] = w;
+					    courseData.course["th"] = th;
+					    courseData.course["f"] = f;
+					    courseData.course["sTime"] = sTime;
+					    courseData.course["eTime"] = eTime;
+					    courseData.course["sDate"] = sDate;
+					    courseData.course["eDate"] = eDate;
+					    courseData.course["courseNumber"] = courseNumber;
+					    courseData.course["secNumber"] = secNumber;
+					    courseData.course["bdst"] = currCourse['meetingsFaculty'][0]['meetingTime']['building'];
+					    courseData.course["term"] = termName;
+					    saveCourseToCookie(courseData);
+				}
+			}
+			if(!found){
+		      //showAllSubj(data);
+		    Swal.fire(
+			  'Error',
+			  'Course not found.',
+			  'warning'
+			)
+			document.getElementById("error").style.display=null;
+			document.getElementById("course").value = "";
+			  return;
+			}
+	}
+	
+	function showAllSubj(data){
+		var courses = data['data']
+			for (var i = 0; i < courses.length; i++) {
+				var currCourse = courses[i];
+
+					found = true;
+						var courseTitle = currCourse['subject']+currCourse['courseNumber'] +" - "+currCourse['sequenceNumber'];
+					    var description = currCourse['courseTitle'];
+					    var faculty = currCourse['faculty'];
+					    var building = currCourse['meetingsFaculty'][0]['meetingTime']['buildingDescription']
+					    var room = currCourse['meetingsFaculty'][0]['meetingTime']['room']
+					    var type = currCourse['scheduleTypeDescription']
+					    var sDate = currCourse['meetingsFaculty'][0]['meetingTime']['startDate']
+					    var eDate = currCourse['meetingsFaculty'][0]['meetingTime']['endDate']
+					    var sTime = time_convert(currCourse['meetingsFaculty'][0]['meetingTime']['beginTime'])
+					    var eTime = time_convert(currCourse['meetingsFaculty'][0]['meetingTime']['endTime'])
+					    var m = currCourse['meetingsFaculty'][0]['meetingTime']['monday']
+					    var t = currCourse['meetingsFaculty'][0]['meetingTime']['tuesday']
+					    var w = currCourse['meetingsFaculty'][0]['meetingTime']['wednesday']
+					    var th = currCourse['meetingsFaculty'][0]['meetingTime']['thursday']
+					    var f = currCourse['meetingsFaculty'][0]['meetingTime']['friday']
+					    var mStyle = "bg-primary";
+					    var tStyle = "bg-primary";
+					    var wStyle = "bg-primary";
+					    var thStyle = "bg-primary";
+					    var wStyle = "bg-primary";
+					    var fStyle = "bg-primary";
+					    if(!m){
+						    mStyle = "bg-secondary";
+					    }
+					    if(!t){
+						    tStyle = "bg-secondary";
+					    }
+					    if(!w){
+						    wStyle = "bg-secondary";
+					    }
+					    if(!th){
+						    thStyle = "bg-secondary";
+					    }
+					    if(!f){
+						    fStyle = "bg-secondary";
+					    }
+					    var facultyNames = "";
+					    for(var j = 0; j < faculty.length;j++){
+						    var facEmail = faculty[j]['emailAddress'];
+						    var name = faculty[j]['displayName'];
+						    var primary = faculty[j]['primaryIndicator'];
+						    var primaryName = "";
+						    if(primary){
+							    primaryName = "Primary ";
+						    }
+						    if(faculty.length == 1){
+								facultyNames += primaryName+"Instructor: <a href='mailto:"+facEmail+"'> " + name + "</a>";
+						    }else{
+							    facultyNames += primaryName+"Instructor: <a href='mailto:"+facEmail+"'> " + name + "</a>"+"<br/> ";
+						    }
+						    
+						    if(j == faculty.length){
+							    facultyNames += primaryName+"Instructor: <a href='mailto:"+facEmail+"'> " + name + "</a>";
+						    }
+					    }
+					    document.getElementById("courses").innerHTML += `
+								<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 row-pad parent">
+									<div class="card">
+										<h6 class="card-header">
+											`+description+`<br/>`+courseTitle+`
+										</h6>
+										<div class="card-body">
+											<p class="card-text">
+												Building: `+building+`<br/>
+												Room: `+room+`<br/>
+												Type: `+type+`<br/>
+												 `+facultyNames+`
+												<div class="d-inline p-1 `+mStyle+` text-white">M</div>
+												<div class="d-inline p-1 `+tStyle+` text-white">T</div>
+												<div class="d-inline p-1 `+wStyle+` text-white">W</div>
+												<div class="d-inline p-1 `+thStyle+` text-white">T</div>
+												<div class="d-inline p-1 `+fStyle+` text-white">F</div><br/>
+												`+sTime+` - `+eTime+`<br/>
+												`+sDate+` - `+eDate+`<br/>
+												`+termName+`
+											</p>
+										</div>
+									</div>
+								</div><br/>`;
+			}
+	}
+	
+	
+	$(document).on('keypress',function(e) {
+	    if(e.which == 13 && document.getElementById("course").value) {
+	        find()
+	    }
+	});
+	
+	function saveCourseToCookie(json) {
+		if(!getCookie("courseDatav2")){
+			var courseDatas = [];
+			courseDatas.push(json)
+			
+			var ctext = JSON.stringify(courseDatas);
+			ctext = textToGzip(ctext)
+			setCookie("courseDatav2",ctext,99);
+			Swal.fire(
+			  'Success',
+			  'Course Added',
+			  'success'
+			)
+		}else{
+			var uctext = getCookie("courseDatav2");
+			uctext = gzipToText(uctext.toString());
+			var courseDatas = JSON.parse(uctext);
+			
+			const byteSize = str => new Blob([str]).size;
+			
+			
+			for(var i = 0; i < courseDatas.length;i++){
+				cNum = courseDatas[i]['course']['courseNumber'];
+				sNum = courseDatas[i]['course']['secNumber'];
+				if(json.course['courseNumber'] == cNum && json.course['secNumber'] == sNum){
+					Swal.fire(
+					  'Failed',
+					  'Course Already Added',
+					  'warning'
+					)
+					return;
+				}
+			}
+			courseDatas.push(json);
+			
+			if(byteSize(textToGzip(JSON.stringify(courseDatas))) >= 4096){
+					Swal.fire(
+					  'Failed',
+					  'Maximum number of courses can be added due to browser limitations',
+					  'warning'
+					)
+					return;
+			}
+			eraseCookie("courseDatav2");
+			var ctext = JSON.stringify(courseDatas);
+			ctext = textToGzip(ctext)
+			setCookie("courseDatav2",ctext,99);
+			Swal.fire(
+			  'Success',
+			  'Course Added',
+			  'success'
+			)
+		}
+	}
+	
+	//check inputs
+	$('.terms').each(function() {
+	   var elem = $(this);
+	
+	   elem.data('oldVal', elem.val());
+	
+	   elem.bind("propertychange change click keyup input paste", function(event){
+	      if (elem.data('oldVal') != elem.val()) {
+	       elem.data('oldVal', elem.val());
+		   
+	       if(elem.val() == "Select Term"){
+		       //subject
+			   $('.subjects').selectpicker('destroy');
+			   document.getElementById("subjects").disabled = true;
+			   document.getElementById("subjects").innerHTML = "<option>Select Term First</option>";
+			   $('.subjects').selectpicker();
+			   document.getElementById("subjects").innerHTML = "";
+		       //course
+			   $('.course').selectpicker('destroy');
+			   document.getElementById("course").disabled = true;
+			   document.getElementById("course").innerHTML = "<option>Select Subject First</option>";
+			   $('.course').selectpicker();
+			   document.getElementById("courses").innerHTML = "";
+			   //section
+			   $('.section').selectpicker('destroy');
+			   document.getElementById("section").disabled = true;
+			   document.getElementById("section").innerHTML = "<option>Select Course First</option>";
+			   $('.section').selectpicker();
+			   document.getElementById("section").innerHTML = "";
+	       }else{
+		       //document.getElementById("courses").innerHTML = "";
+		       //getSubjDetails(elem.val());
+		       //handle section
+		       for (var i = 0; i < terms.length; i++) {
+				   if(terms[i]['description'] == elem.val()){
+					   term = terms[i]['code'];
+					   termName = elem.val();
+				   }
+			   }
+			   
+
+			    $('.subjects').selectpicker('destroy');
+			    document.getElementById("subjects").disabled = false;
+			    getSubjects();
+			    $('.subjects').selectpicker();
+			    
+			   //course
+			   $('.course').selectpicker('destroy');
+			   document.getElementById("course").disabled = true;
+			   document.getElementById("course").innerHTML = "<option>Select Subject First</option>";
+			   $('.course').selectpicker();
+			   document.getElementById("courses").innerHTML = "";
+			   //section
+			   $('.section').selectpicker('destroy');
+			   document.getElementById("section").disabled = true;
+			   document.getElementById("section").innerHTML = "<option>Select Course First</option>";
+			   $('.section').selectpicker();
+			   document.getElementById("section").innerHTML = "";
+
+	       }
+	     }
+	   });
+	 });
+	 
+	 
+	$('.subjects').each(function() {
+	   var elem = $(this);
+	
+	   elem.data('oldVal', elem.val());
+	
+	   elem.bind("propertychange change click keyup input paste", function(event){
+	      if (elem.data('oldVal') != elem.val()) {
+	       elem.data('oldVal', elem.val());
+	    
+	       if(elem.val() == "Select Subject"){
+		       //course
+			   $('.course').selectpicker('destroy');
+			   document.getElementById("course").disabled = true;
+			   document.getElementById("course").innerHTML = "<option>Select Subject First</option>";
+			   $('.course').selectpicker();
+			   document.getElementById("courses").innerHTML = "";
+			   //section
+			   $('.section').selectpicker('destroy');
+			   document.getElementById("section").disabled = true;
+			   document.getElementById("section").innerHTML = "<option>Select Course First</option>";
+			   $('.section').selectpicker();
+			   document.getElementById("section").innerHTML = "";
+	       }else{
+		       document.getElementById("courses").innerHTML = "";
+		       getSubjDetails(elem.val());
+		       //handle section
+		       //section
+			   $('.section').selectpicker('destroy');
+			   document.getElementById("section").disabled = true;
+			   document.getElementById("section").innerHTML = "<option>Select Course First</option>";
+			   $('.section').selectpicker();
+			   document.getElementById("section").innerHTML = "";
+	       }
+	     }
+	   });
+	 });
+	 
+	 $('.course').each(function() {
+	   var elem = $(this);
+	
+	   elem.data('oldVal', elem.val());
+	
+	   elem.bind("propertychange change click keyup input paste", function(event){
+	      if (elem.data('oldVal') != elem.val()) {
+	       elem.data('oldVal', elem.val());
+	    
+	       if(elem.val() == "Select Course"){
+		       document.getElementById("courses").innerHTML = "";
+		       //section
+			   $('.section').selectpicker('destroy');
+			   document.getElementById("section").disabled = true;
+			   document.getElementById("section").innerHTML = "<option>Select Course First</option>";
+			   $('.section').selectpicker();
+			   document.getElementById("section").innerHTML = "";
+	       }else{
+		       find()
+	       }
+	     }
+	   });
+	 });
+	 
+	 $('.section').each(function() {
+	   var elem = $(this);
+	
+	   elem.data('oldVal', elem.val());
+	
+	   elem.bind("propertychange change click keyup input paste", function(event){
+	      if (elem.data('oldVal') != elem.val()) {
+	       elem.data('oldVal', elem.val());
+	    
+	       if(elem.val() == "Select Section"){
+		       find()
+	       }else{
+		       findsec(elem.val())
+	       }
+	     }
+	   });
+	 });
+	
+	//helper funcs
+	function isLetter(str) {
+	  return str.length === 1 && str.match(/[a-z]/i);
+	}
+	
+	function isNumber(char) {
+	  if (typeof char !== 'string') {
+	    return false;
+	  }
+	
+	  if (char.trim() === '') {
+	    return false;
+	  }
+	
+	  return !isNaN(char);
+	}
+	
+	function time_convert(num)
+	 { 
+	  var hours = Math.floor(num / 100);  
+	  var suffix = hours >= 12 ? "PM":"AM";
+	  hours = ((hours + 11) % 12 + 1)
+	  var minutes = Math.floor(num % 100);
+	  if(minutes == 0){
+		  minutes = "00"
+	  }
+	  return hours + ":" + minutes + suffix;         
+	}
+	
+	function setCookie(cname, cvalue, exdays) {
+	  const d = new Date();
+	  d.setTime(d.getTime() + (exdays*24*60*60*1000));
+	  let expires = "expires="+ d.toUTCString();
+	  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+	}
+	
+	function getCookie(cname) {
+	  let name = cname + "=";
+	  let decodedCookie = decodeURIComponent(document.cookie);
+	  let ca = decodedCookie.split(';');
+	  for(let i = 0; i <ca.length; i++) {
+	    let c = ca[i];
+	    while (c.charAt(0) == ' ') {
+	      c = c.substring(1);
+	    }
+	    if (c.indexOf(name) == 0) {
+	      return c.substring(name.length, c.length);
+	    }
+	  }
+	  return "";
+	}
+	
+	function eraseCookie(name) {   
+    	document.cookie = name+'=; Max-Age=-99999999;';  
+	}
+	//dark reader
+	DarkReader.auto({
+	    brightness: 100,
+	    contrast: 100
+	});
+
+</script>

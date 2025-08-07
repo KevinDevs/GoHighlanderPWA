@@ -1,0 +1,1281 @@
+<html translate="no" data-notch="true" data-orientation="portrait">
+<head>
+	<title>GoHighlander Lite</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+	<script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+	<!-- <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">-->
+	<style>
+	/* fallback */
+	@font-face {
+	  font-family: 'Material Icons';
+	  font-style: normal;
+	  font-weight: 400;
+	  src: url(https://fonts.gstatic.com/s/materialicons/v143/flUhRq6tzZclQEJ-Vdg-IuiaDsNcIhQ8tQ.woff2) format('woff2');
+	}
+	
+	.material-icons {
+	  font-family: 'Material Icons';
+	  font-weight: normal;
+	  font-style: normal;
+	  font-size: 24px;
+	  line-height: 1;
+	  letter-spacing: normal;
+	  text-transform: none;
+	  display: inline-block;
+	  white-space: nowrap;
+	  word-wrap: normal;
+	  direction: ltr;
+	  -webkit-font-feature-settings: 'liga';
+	  -webkit-font-smoothing: antialiased;
+	}
+	</style>
+	<link rel="shortcut icon" href="/images/favicon.ico">
+	<link rel="bookmark" type="image/x-icon" href="/images/favicon.ico">
+	<link rel="manifest" href="manifest.json">
+	<meta charset="UTF-8">
+	<meta name="mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="application-name" content="GoHighlander Lite">
+	<meta name="apple-mobile-web-app-title" content="GoHighlader Lite">
+	<meta name="theme-color" content="#003DA5">
+	<meta name="msapplication-navbutton-color" content="#003DA5">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+	<meta name="msapplication-starturl" content="/wc?">
+	<link rel="apple-touch-icon" type="image/png" sizes="192x192" href="/images/192x192.png">
+	<script src="/e39a7f1b81.js" crossorigin="anonymous"></script>
+	<script src="/pwa/detechNotch.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	<link rel="icon" type="image/png" sizes="192x192" href="/images/192x192.png">
+	<link rel="apple-touch-icon" type="image/png" sizes="192x192" href="/images/192x192.png">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	 <link rel="apple-touch-startup-image" media="screen and (device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)" href="splash_screens/iPhone_14_Pro_Max_landscape.png">
+	<link rel="apple-touch-startup-image" media="screen and (device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)" href="splash_screens/iPhone_14_Pro_landscape.png">
+	<link rel="apple-touch-startup-image" media="screen and (device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)" href="splash_screens/iPhone_14_Plus__iPhone_13_Pro_Max__iPhone_12_Pro_Max_landscape.png">
+	<link rel="apple-touch-startup-image" media="screen and (device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)" href="splash_screens/iPhone_14__iPhone_13_Pro__iPhone_13__iPhone_12_Pro__iPhone_12_landscape.png">
+	<link rel="apple-touch-startup-image" media="screen and (device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)" href="splash_screens/iPhone_13_mini__iPhone_12_mini__iPhone_11_Pro__iPhone_XS__iPhone_X_landscape.png">
+	<link rel="apple-touch-startup-image" media="screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)" href="splash_screens/iPhone_11_Pro_Max__iPhone_XS_Max_landscape.png">
+	<link rel="apple-touch-startup-image" media="screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" href="splash_screens/iPhone_11__iPhone_XR_landscape.png">
+	<link rel="apple-touch-startup-image" media="screen and (device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)" href="splash_screens/iPhone_8_Plus__iPhone_7_Plus__iPhone_6s_Plus__iPhone_6_Plus_landscape.png">
+	<link rel="apple-touch-startup-image" media="screen and (device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" href="splash_screens/iPhone_8__iPhone_7__iPhone_6s__iPhone_6__4.7__iPhone_SE_landscape.png">
+	<link rel="apple-touch-startup-image" media="screen and (device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" href="splash_screens/4__iPhone_SE__iPod_touch_5th_generation_and_later_landscape.png">
+	<link rel="apple-touch-startup-image" media="screen and (device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" href="splash_screens/12.9__iPad_Pro_landscape.png">
+	<link rel="apple-touch-startup-image" media="screen and (device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" href="splash_screens/11__iPad_Pro__10.5__iPad_Pro_landscape.png">
+	<link rel="apple-touch-startup-image" media="screen and (device-width: 820px) and (device-height: 1180px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" href="splash_screens/10.9__iPad_Air_landscape.png">
+	<link rel="apple-touch-startup-image" media="screen and (device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" href="splash_screens/10.5__iPad_Air_landscape.png">
+	<link rel="apple-touch-startup-image" media="screen and (device-width: 810px) and (device-height: 1080px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" href="splash_screens/10.2__iPad_landscape.png">
+	<link rel="apple-touch-startup-image" media="screen and (device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" href="splash_screens/9.7__iPad_Pro__7.9__iPad_mini__9.7__iPad_Air__9.7__iPad_landscape.png">
+	<link rel="apple-touch-startup-image" media="screen and (device-width: 744px) and (device-height: 1133px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" href="splash_screens/8.3__iPad_Mini_landscape.png">
+	<link rel="apple-touch-startup-image" media="screen and (device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="splash_screens/iPhone_14_Pro_Max_portrait.png">
+	<link rel="apple-touch-startup-image" media="screen and (device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="splash_screens/iPhone_14_Pro_portrait.png">
+	<link rel="apple-touch-startup-image" media="screen and (device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="splash_screens/iPhone_14_Plus__iPhone_13_Pro_Max__iPhone_12_Pro_Max_portrait.png">
+	<link rel="apple-touch-startup-image" media="screen and (device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="splash_screens/iPhone_14__iPhone_13_Pro__iPhone_13__iPhone_12_Pro__iPhone_12_portrait.png">
+	<link rel="apple-touch-startup-image" media="screen and (device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="splash_screens/iPhone_13_mini__iPhone_12_mini__iPhone_11_Pro__iPhone_XS__iPhone_X_portrait.png">
+	<link rel="apple-touch-startup-image" media="screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="splash_screens/iPhone_11_Pro_Max__iPhone_XS_Max_portrait.png">
+	<link rel="apple-touch-startup-image" media="screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="splash_screens/iPhone_11__iPhone_XR_portrait.png">
+	<link rel="apple-touch-startup-image" media="screen and (device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="splash_screens/iPhone_8_Plus__iPhone_7_Plus__iPhone_6s_Plus__iPhone_6_Plus_portrait.png">
+	<link rel="apple-touch-startup-image" media="screen and (device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="splash_screens/iPhone_8__iPhone_7__iPhone_6s__iPhone_6__4.7__iPhone_SE_portrait.png">
+	<link rel="apple-touch-startup-image" media="screen and (device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="splash_screens/4__iPhone_SE__iPod_touch_5th_generation_and_later_portrait.png">
+	<link rel="apple-touch-startup-image" media="screen and (device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="splash_screens/12.9__iPad_Pro_portrait.png">
+	<link rel="apple-touch-startup-image" media="screen and (device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="splash_screens/11__iPad_Pro__10.5__iPad_Pro_portrait.png">
+	<link rel="apple-touch-startup-image" media="screen and (device-width: 820px) and (device-height: 1180px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="splash_screens/10.9__iPad_Air_portrait.png">
+	<link rel="apple-touch-startup-image" media="screen and (device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="splash_screens/10.5__iPad_Air_portrait.png">
+	<link rel="apple-touch-startup-image" media="screen and (device-width: 810px) and (device-height: 1080px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="splash_screens/10.2__iPad_portrait.png">
+	<link rel="apple-touch-startup-image" media="screen and (device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="splash_screens/9.7__iPad_Pro__7.9__iPad_mini__9.7__iPad_Air__9.7__iPad_portrait.png">
+	<link rel="apple-touch-startup-image" media="screen and (device-width: 744px) and (device-height: 1133px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="splash_screens/8.3__iPad_Mini_portrait.png">
+	<script src="https://cdn.jsdelivr.net/npm/darkreader@4.9.58/darkreader.min.js"></script>
+	<!-- pwa update -->
+	  <style>
+    #snackbar {
+      visibility: hidden;
+      min-width: 250px;
+      margin-left: -125px;
+      background-color: #333;
+      color: #fff;
+      text-align: center;
+      border-radius: 2px;
+      padding: 16px;
+      position: fixed;
+      z-index: 1;
+      left: 50%;
+      bottom: 30px;
+    }
+
+    #snackbar.show {
+      visibility: visible;
+      -webkit-animation: fadein 0.5s;
+      animation: fadein 0.5s;
+    }
+
+    @-webkit-keyframes fadein {
+      from {
+        bottom: 0;
+        opacity: 0;
+      }
+      to {
+        bottom: 30px;
+        opacity: 1;
+      }
+    }
+
+    @keyframes fadein {
+      from {
+        bottom: 0;
+        opacity: 0;
+      }
+      to {
+        bottom: 30px;
+        opacity: 1;
+      }
+    }
+    
+    .modal.fade.modal-right .modal-dialog {
+	  transform: translate(125%, 0px);
+	}
+	
+	.modal.show.modal-right .modal-dialog {
+	  transform: none;
+	}
+	.modal-backdrop {
+	   background-color: transparent;
+	}
+  </style>
+  <!--end pwa update->>
+	<!-- remove border -->
+	<style>
+		@import url("https://fonts.googleapis.com/css?family=Nunito+Sans");
+		a:focus {
+		outline: none;
+		}
+		#mainTitle{
+			font-family: "Nunito Sans";
+			font-weight: bold;
+		}
+		.loader {
+			position: fixed;
+			left: 0px;
+			top: 0px;
+			width: 100%;
+			height: 100%;
+			z-index: 9999;
+			background: #222;
+		}
+		
+		.loader h1{
+			color: white;
+		}
+		
+		.lds-ring {
+			display: inline-block;
+			position: relative;
+			width: 80px;
+			height: 80px;
+		}
+		
+		.lds-ring div {
+			box-sizing: border-box;
+			display: block;
+			position: absolute;
+			width: 64px;
+			height: 64px;
+			margin: 8px;
+			border: 8px solid #fff;
+			border-radius: 50%;
+			animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+			border-color: #fff transparent transparent transparent;
+		}
+		
+		.lds-ring div:nth-child(1) {
+			animation-delay: -0.45s;
+		}
+		
+		.lds-ring div:nth-child(2) {
+			animation-delay: -0.3s;
+		}
+		
+		.lds-ring div:nth-child(3) {
+			animation-delay: -0.15s;
+		}
+		
+		@keyframes lds-ring {
+			0% {
+				transform: rotate(0deg);
+			}
+			100% {
+				transform: rotate(360deg);
+			}
+		}
+		
+		body{
+			-webkit-touch-callout: none; /* iOS Safari */
+		    -webkit-user-select: none; /* Safari */
+		     -khtml-user-select: none; /* Konqueror HTML */
+		       -moz-user-select: none; /* Old versions of Firefox */
+		        -ms-user-select: none; /* Internet Explorer/Edge */
+		            user-select: none; /* Non-prefixed version, currently
+		                                  supported by Chrome, Edge, Opera and Firefox */
+		}
+		
+		body {
+			    margin: 0 0 0 0;
+			    background: #003DA5;
+			}
+			
+			.nav {
+			    position: fixed;
+			    bottom: 0;
+			    width: 100%;
+			    height: 45px;
+			    box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+			    background-color: #ffffff;
+			    display: flex;
+			    overflow-x: auto;
+			}
+			
+			.nav__link {
+			    display: flex;
+			    flex-direction: column;
+			    align-items: center;
+			    justify-content: center;
+			    flex-grow: 1;
+			    min-width: 50px;
+			    overflow: hidden;
+			    white-space: nowrap;
+			    font-family: sans-serif;
+			    font-size: 15px;
+			    color: #444444;
+			    text-decoration: none;
+			    -webkit-tap-highlight-color: transparent;
+			    transition: background-color 0.1s ease-in-out;
+			}
+			
+		
+			
+			.nav__link--active {
+			    color: #003DA5;
+			}
+			
+			.nav__icon {
+			    font-size: 18px;
+			}
+			.nav__text{
+				font-size: 10px;
+			}
+			#frame{
+				height: calc(100% - 90px);
+			}
+			#frame2{
+				height: calc(100% - 90px);
+			}
+			#frame3{
+				height: calc(100% - 90px);
+			}
+			}
+			html, body {
+			  overscroll-behavior-y: none;
+			  position: fixed;
+			}
+			@media screen and (orientation: portrait) {
+			  #frame[data-notch="true"] {
+			    height: 85% !important;
+			  }
+			}
+			.swal2-container{
+				z-index: 9999999999;
+			}
+	</style>
+	
+	<script type="module" src="https://cdn.jsdelivr.net/gh/khmyznikov/pwa-install@497d352feeabc9aa6c65a6f93133804b83321758/dist/pwa-install.bundle.js"></script>
+		<style>
+.control-panel{
+    font-family: system-ui, -apple-system, 'HelveticaNeue', BlinkMacSystemFont, "Roboto", "Segoe UI";
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+.control-panel fieldset:hover{
+    z-index: 10;
+    background-color: rgba(255, 255, 255, 0.25);
+}
+.control-panel fieldset{
+    color: #fff;
+    margin: 30px;
+    border-color: #FFF;
+    border-style: dotted;
+
+    opacity: .5;
+}
+.control-panel fieldset:hover{ 
+    opacity: 1;
+}
+
+.control-panel textarea{
+    color: #fff;
+    background: transparent;
+    min-width: 300px;
+    border: transparent;
+}
+.control-panel button{
+    background: transparent;
+    color: #fff;
+    border-radius: 3px;
+    border: 1px solid #fff;
+
+    padding: 5px 10px;
+}
+.control-panel button:hover{
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+.control-panel hr{
+    border: 2px dotted #fff;
+    border-bottom: none;
+}
+	</style>
+	
+	<!-- app like css -->
+	<link rel="stylesheet" href="topbar.css">
+</head>
+<body onorientationchange="updateOrientation();" style="position:fixed;">
+<div id="loader" class="loader" style="z-index:999999999;display: none;"><center><h1><br/><br/>Loading</h1><div class="lds-ring"><div></div></div></center></div>
+<div id="portrait" class="loader" style="display:none;"><center><h1><br/><br/>Please rotate device to vertical for best experience</h1><img src="/images/apple-touch-icon.png" height="100px"></img></center></div>
+<div id="toolbarNotch" style="background: #003DA5;padding: env(safe-area-inset-top) env(safe-area-inset-right) 0 env(safe-area-inset-left);">
+<ons-toolbar class="toolbar" id="toolbar" onclick="barclick()" style="background: #003DA5;position: unset;box-shadow: rgb(0 0 0 / 20%) 0px 3px 3px 0px;z-index: 2147483649;">
+   <div class="left toolbar__left">
+	   
+	   <ons-back-button class="back-button" id="mapshow" style="display: none; padding-right: 8px; color: white; padding-top: 5px;" onclick="f4go('/map/ucrmap.html'); document.getElementById('mapshow').style.display = 'none'; document.getElementById('maplist').style.display = 'block'; ">
+		<i class="fas fa-map fa-2x" aria-hidden="true"></i>
+		</ons-back-button>
+		
+		<!--<ons-back-button class="back-button" id="maplist" style="display: none; padding-right: 8px; color: white; padding-top: 5px;" onclick="f4go('/map/');document.getElementById('mapshow').style.display = 'block';document.getElementById('maplist').style.display = 'none';">-->
+		<ons-back-button class="back-button" id="maplist" style="display: none; padding-right: 8px; color: white; padding-top: 5px;" onclick="modalFrameGo('/map/', 'Map List');">
+		<i class="fas fa-list fa-2x" aria-hidden="true"></i>
+		</ons-back-button>
+	   
+	   <ons-back-button class="back-button" id="manageCourses" style="display: block; padding-right: 8px; color: white; padding-top: 5px;" onclick="modalFrameGo('https://utils.gohighlander.app/courses/mycoursesv2.html', 'My Courses');">
+		<i class="fas fa-bars fa-2x" aria-hidden="true"></i>
+		</ons-back-button>
+       
+   </div>
+   <div class="center toolbar__center toolbar__title" id="mainTitle" style="color:white">GoHighlander Lite</div>
+   <!-- RIGHT TOOLBAR -->
+	<div class="left toolbar__right">
+		
+		<ons-back-button class="back-button" id="navi" style="display: none; padding-right: 8px; color: white; padding-top: 5px;" onclick="modalFrameGo('https://utils.gohighlander.app/map/mapview.html', 'Navigation');">
+		<i class="fas fa-compass fa-2x" aria-hidden="true"></i>
+		</ons-back-button>
+		
+		<ons-back-button class="back-button" id="parking" style="display: none; padding-right: 8px; color: white; padding-top: 5px;" onclick="modalFrameGo('https://utils.gohighlander.app/vue/parking_forecastv2.html', 'Parking Forecast');">
+		<i class="fas fa-chart-bar fa-2x" aria-hidden="true"></i>
+		</ons-back-button>
+		
+		<ons-back-button class="back-button" id="courseSearch" style="display: block; padding-right: 8px; color: white; padding-top: 5px;" onclick="addCourseChoice();">
+		<i class="fas fa-plus fa-2x" aria-hidden="true"></i>
+		</ons-back-button>
+		
+		<ons-back-button class="back-button" id="courseSurvey" style="display: block; padding-right: 8px; color: white; padding-top: 5px;" onclick="window.open('https://docs.google.com/forms/d/1ieV9hByRgtBzp4mrEwRcNBNFnLC9f4XfZ6RPoa-NrD4', '_blank');
+">
+		<i class="fas fa-plus fa-2x" aria-hidden="true"></i>
+		</ons-back-button>
+		
+	</div>
+</ons-toolbar>
+</div>
+
+
+
+		
+		<div id="frameC1" style="display:none">
+			<!--<div id="notice" style="padding: 10px;">
+			<div role="alert" class="alert alert-danger">
+		        <h6 class="alert-heading">Notice</h6>
+				<span>Please read the tab below before using this APP</span>
+		    </div>
+			<button class="btn btn-primary btn-lg btn-block" onclick="modalFrameGo('/about.html', 'About this APP');">
+			    Go
+			</button>
+			</div>-->
+			<iframe id="frame" class="f1" width="100%" height="85%" frameborder="0" style="position: fixed;z-index: 2147483;" src=""/></iframe>
+		</div>
+		<div id="frameC2">
+			<iframe id="frame2" class="f2" width="100%" height="85%" frameborder="0" style="position: fixed;z-index: 2147483;" src="/courses/myschedulev2.html"/></iframe>
+		</div>
+		<div id="frameC3" style="display:none">
+			<iframe id="frame3" class="f3" width="100%" height="85%" frameborder="0" style="position: fixed;z-index: 2147483;" src=""/></iframe>
+		</div>
+		<div id="frameC4" style="display:none">
+			<iframe id="frame4" class="f4" width="100%" height="85%" frameborder="0" style="position: fixed;z-index: 2147483;" src=""/></iframe>
+		</div>
+		
+		<div id="frameC5" style="display:none">
+			<iframe id="frame5" class="f5" width="100%" height="85%" frameborder="0" style="position: fixed;z-index: 2147483;" src=""/></iframe>
+		</div>
+		
+	<!-- Modal 
+	<div class="modal fade" id="iframeModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="z-index: 9999999;">
+	  <div class="modal-dialog modal-dialog-centered modal-fullscreen">
+	    <div class="modal-content">
+	      <div style="background-color: rgb(0, 61, 165); height: env(safe-area-inset-top);"></div>
+		      
+		  <div class="modal-header" style="background-color: rgb(0, 61, 165); border-bottom: 0px; display: unset;">
+	        <center><h5 class="modal-title" id="iframeModalTitle" style="color: white;">Test</h5></center>
+	      </div>
+	      <div class="modal-body" style="padding: 0;">
+	        <iframe id="modalFrame" src="" frameborder="0" width="100%" height="100%"></iframe>
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+	Modal -->
+	
+	<div class="modal fade modal-right" id="iframeModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="z-index: 9999999;">
+	  <div class="modal-dialog modal-dialog-centered modal-fullscreen">
+	    <div class="modal-content">
+	      <div style="background-color: rgb(0, 61, 165); height: env(safe-area-inset-top);"></div>
+		      
+		  <div class="modal-header" style="background-color: rgb(0, 61, 165); border-bottom: 0px;padding: 0.2rem 0.2rem;">
+			<ons-back-button class="back-button" id="backButton" style="display: inline-block;" data-bs-dismiss="modal">
+	         <span class="back-button__icon" style="fill:white">
+	            <!--?xml version="1.0" encoding="UTF-8"?-->
+	            <svg width="13px" height="21px" viewBox="0 0 13 21" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+	               <title>ios-back-button-icon</title>
+	               <desc>Created with Sketch.</desc>
+	               <defs></defs>
+	               <g id="toolbar-back-button" stroke="none" stroke-width="1" fill-rule="evenodd">
+	                  <g id="ios" transform="translate(-34.000000, -30.000000)">
+	                     <polygon id="ios-back-button-icon" points="34 40.5 44.5 30 46.5 32 38 40.5 46.5 49 44.5 51"></polygon>
+	                  </g>
+	               </g>
+	            </svg>
+	         </span>
+	         <span class="back-button__label" style="font-family: 'Nunito Sans'; color:white;">
+	         Back         </span>
+	      </ons-back-button>
+	      
+	      <h5 class="modal-title" id="iframeModalTitle" style="color: white;margin-right: 5rem;">Test</h5>
+      
+	        <center></center>
+	      </div>
+	      <div class="modal-body" style="padding: 0;">
+	        <iframe id="modalFrame" src="" frameborder="0" width="100%" height="100%"></iframe>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+	
+	
+	
+	<div id="snackbar" style="z-index: 9999999">A new version of this app is available. Reload <a id="reload"></a> to update.</div>
+	
+	<nav class="nav" id="nav" style="z-index: 2147483;">
+	  <div id="dash" class="nav__link" onclick="dash();">
+	    <i class="material-icons nav__icon">home</i>
+	    <span class="nav__text">Home</span>
+	  </div>
+	  <div id="profile" class="nav__link" onclick="profile();">
+	    <i class="material-icons nav__icon">task</i>
+	    <span class="nav__text">Tasks</span>
+	  </div>
+	  <div id="food" class="nav__link" onclick="food();">
+	    <i class="material-icons nav__icon">schedule</i>
+	    <span class="nav__text">My Schedule</span>
+	  </div>
+	  <div id="map" class="nav__link" onclick="map();">
+	    <i class="material-icons nav__icon">map</i>
+	    <span class="nav__text">Map</span>
+	  </div>
+	  <div id="settings" class="nav__link" onclick="settings();">
+	    <i class="material-icons nav__icon">local_parking</i>
+	    <span class="nav__text">Parking</span>
+	  </div>
+	</nav>
+	<pwa-install id="pwa-install" manifest-url="/pwa/manifest.json"></pwa-install>
+
+	<script type="text/javascript">
+		var pwaInstall = document.getElementById("pwa-install");
+
+		const getRelated = () => {
+			pwaInstall.getInstalledRelatedApps().then(
+				(result) => {
+					logMessage(result.toString() || 'None');
+				}
+			)
+		}
+
+		const forceApple = (apple = true) => {
+			pwaInstall.isAppleMobilePlatform = apple;
+			pwaInstall.hideDialog();
+			pwaInstall.showDialog();
+		}
+	</script>
+	<script>
+    
+	dash();
+	  //---FRAME CTRL TOTAL
+	  //frame redirect
+	  function go(href){
+	    document.getElementById('frame').src = href;
+	  }
+	  function f1go(href){
+	    document.getElementsByClassName("f1")[0].src = href;
+	  }
+	  function f2go(href){
+	    document.getElementsByClassName("f2")[0].src = href;
+	  }
+	  function f3go(href){
+	    document.getElementsByClassName("f3")[0].src = href;
+	  }
+	  function f4go(href){
+	    document.getElementsByClassName("f4")[0].src = href;
+	  }
+	  function f5go(href){
+	    document.getElementsByClassName("f5")[0].src = href;
+	  }
+	  //frame reset
+	  function f1rst(){
+	    document.getElementsByClassName("f1")[0].src = "/courses/nextclass_litev2.html";
+	  }
+	  function f2rst(){
+	    document.getElementsByClassName("f2")[0].src = "/courses/myschedulev2.html";
+	  }
+	  //f2rst();
+	  function f3rst(){
+		document.getElementsByClassName("f3")[0].src = "/icsevent.html";
+	  }
+	  function f4rst(){
+		document.getElementsByClassName("f4")[0].src = "/map/ucrmap.html";
+	  }
+	  function f5rst(){
+		document.getElementsByClassName("f5")[0].src = "/vue/parking_vue.html";
+	  }
+	  //f3rst();
+	  //--- FRAME FUNCTIONS---
+	  var clickedDash = false;
+	  function dash(){
+		//see if first click
+		if(!clickedDash){
+			f1rst();
+			clickedDash = true;
+		}
+		//url = document.getElementById("frame").contentWindow.location.href;
+		//if(url.includes("https://<?php echo $domain; ?>/dash.php")){
+		if(document.getElementById("dash").classList.contains("nav__link--active")){
+			f1rst();
+			return;
+		}
+		//go('dash.php');
+		//-----IFRAME CTRL-----
+		//show food iframe
+		document.getElementById("frameC1").style = "display:block";
+		document.getElementById("frameC2").style = "display:none";
+		document.getElementById("frameC3").style = "display:none";
+		document.getElementById("frameC4").style = "display:none";
+		document.getElementById("frameC5").style = "display:none";
+		//document.getElementById("settingsTab").style.display = "none";
+		//set correct iframe id
+		document.getElementsByClassName("f1")[0].id = "frame";
+		document.getElementsByClassName("f2")[0].id = "frame2";
+		document.getElementsByClassName("f3")[0].id = "frame3";
+		document.getElementsByClassName("f4")[0].id = "frame4";
+		document.getElementsByClassName("f5")[0].id = "frame5";
+		//iframe reset
+		//f2rst();f3rst();
+		//-----MENU CTRL-----
+		document.getElementById("dash").classList.add("nav__link--active");
+		//document.getElementById("scan").classList.remove("nav__link--active");
+		document.getElementById("food").classList.remove("nav__link--active");
+		document.getElementById("profile").classList.remove("nav__link--active");
+		document.getElementById("settings").classList.remove("nav__link--active");
+		document.getElementById("map").classList.remove("nav__link--active");
+		document.getElementById("mainTitle").innerHTML = "Home";
+		//document.getElementById("qrCode").style.display = "none";
+		document.title = 'Home';
+		
+		//map
+		document.getElementById("navi").style.display = "none";
+		document.getElementById("mapshow").style.display = "none";
+		document.getElementById("maplist").style.display = "none";
+		document.getElementById("courseSearch").style.display = "none";
+		document.getElementById("manageCourses").style.display = "none";
+		document.getElementById("parking").style.display = "none";
+		document.getElementById("courseSurvey").style.display = "none";
+	  }
+	  
+	  var clickedMap = false;
+	  f4rst();
+	  function map(){
+		//see if first click
+		if(!clickedMap){
+			f4rst();
+			clickedMap = true;
+		}
+		//url = document.getElementById("frame").contentWindow.location.href;
+		//if(url.includes("https://<?php echo $domain; ?>/dash.php")){
+		if(document.getElementById("map").classList.contains("nav__link--active")){
+			f4rst();
+			return;
+		}
+		//go('dash.php');
+		//-----IFRAME CTRL-----
+		//show food iframe
+		document.getElementById("frameC1").style = "display:none";
+		document.getElementById("frameC2").style = "display:none";
+		document.getElementById("frameC3").style = "display:none";
+		document.getElementById("frameC4").style = "display:block";
+		//f4go("/map/ucrmap.html");
+		document.getElementById("frameC5").style = "display:none";
+		//document.getElementById("settingsTab").style.display = "none";
+		//set correct iframe id
+		document.getElementsByClassName("f1")[0].id = "frame1";
+		document.getElementsByClassName("f2")[0].id = "frame2";
+		document.getElementsByClassName("f3")[0].id = "frame3";
+		document.getElementsByClassName("f4")[0].id = "frame";
+		document.getElementsByClassName("f5")[0].id = "frame5";
+		//iframe reset
+		//f2rst();f3rst();
+		//-----MENU CTRL-----
+		document.getElementById("dash").classList.remove("nav__link--active");
+		//document.getElementById("scan").classList.remove("nav__link--active");
+		document.getElementById("food").classList.remove("nav__link--active");
+		document.getElementById("profile").classList.remove("nav__link--active");
+		document.getElementById("map").classList.add("nav__link--active");
+		document.getElementById("settings").classList.remove("nav__link--active");
+		document.getElementById("mainTitle").innerHTML = "Map";
+		//document.getElementById("qrCode").style.display = "none";
+		document.title = 'Map';
+		
+		//map
+		document.getElementById("navi").style.display = "block";
+		document.getElementById("maplist").style.display = "block";
+		document.getElementById("courseSearch").style.display = "none";
+		document.getElementById("manageCourses").style.display = "none";
+		document.getElementById("parking").style.display = "none";
+	  }
+	  
+	  function mapShowCode(code){
+		if(code == 'ONLINE'){
+			Swal.fire({
+			  icon: 'warning',
+			  title: 'No Location Available',
+			  text: 'Online courses do not have a location.',
+			});
+			return;
+		}
+		//-----IFRAME CTRL-----
+		//show food iframe
+		document.getElementById("frameC1").style = "display:none";
+		document.getElementById("frameC2").style = "display:none";
+		document.getElementById("frameC3").style = "display:none";
+		document.getElementById("frameC4").style = "display:block";
+		//f4go("/map/ucrmap.html");
+		document.getElementById("frameC5").style = "display:none";
+		//document.getElementById("settingsTab").style.display = "none";
+		//set correct iframe id
+		document.getElementsByClassName("f1")[0].id = "frame1";
+		document.getElementsByClassName("f2")[0].id = "frame2";
+		document.getElementsByClassName("f3")[0].id = "frame3";
+		document.getElementsByClassName("f4")[0].id = "frame";
+		document.getElementsByClassName("f5")[0].id = "frame5";
+		//iframe reset
+		//f2rst();f3rst();
+		//-----MENU CTRL-----
+		document.getElementById("dash").classList.remove("nav__link--active");
+		//document.getElementById("scan").classList.remove("nav__link--active");
+		document.getElementById("food").classList.remove("nav__link--active");
+		document.getElementById("profile").classList.remove("nav__link--active");
+		document.getElementById("map").classList.add("nav__link--active");
+		document.getElementById("settings").classList.remove("nav__link--active");
+		document.getElementById("mainTitle").innerHTML = "Map";
+		//document.getElementById("qrCode").style.display = "none";
+		document.title = 'Map';
+		//------RUN JS-------
+		document.getElementsByClassName("f4")[0].contentWindow.showPopByCode(code);
+		
+		//map
+		document.getElementById("navi").style.display = "block";
+		document.getElementById("maplist").style.display = "block";
+		document.getElementById("courseSearch").style.display = "none";
+		document.getElementById("manageCourses").style.display = "none";
+		document.getElementById("parking").style.display = "none";
+		document.getElementById("courseSurvey").style.display = "none";
+	  }
+	  
+	  function food(){
+		//url = document.getElementById("frame").contentWindow.location.href;
+		//if(url.includes("https://<?php echo $domain; ?>/food.php")){
+		if(document.getElementById("food").classList.contains("nav__link--active")){
+			f2rst();
+			return;
+		}
+		//go('food.php');
+		//-----IFRAME CTRL-----
+		//show food iframe
+		document.getElementById("frameC1").style = "display:none";
+		document.getElementById("frameC2").style = "display:block";
+		document.getElementById("frameC3").style = "display:none";
+		document.getElementById("frameC4").style = "display:none";
+		document.getElementById("frameC5").style = "display:none";
+		//document.getElementById("settingsTab").style.display = "none";
+		//set correct iframe id
+		document.getElementsByClassName("f1")[0].id = "frame1";
+		document.getElementsByClassName("f2")[0].id = "frame";
+		document.getElementsByClassName("f3")[0].id = "frame3";
+		document.getElementsByClassName("f4")[0].id = "frame4";
+		document.getElementsByClassName("f5")[0].id = "frame5";
+		//iframe reset
+		//f1rst();f3rst();
+		//-----MENU CTRL-----
+		document.getElementById("food").classList.add("nav__link--active");
+		document.getElementById("dash").classList.remove("nav__link--active");
+		//document.getElementById("scan").classList.remove("nav__link--active");
+		document.getElementById("profile").classList.remove("nav__link--active");
+		document.getElementById("settings").classList.remove("nav__link--active");
+		document.getElementById("map").classList.remove("nav__link--active");
+		
+		//-----TITLE CYRL-----
+		document.getElementById("mainTitle").innerHTML = "My Schedule";
+		document.title = 'My Schedule';
+		//document.getElementById("qrCode").style.display = "block";
+		
+		//map
+		document.getElementById("navi").style.display = "none";
+		document.getElementById("mapshow").style.display = "none";
+		document.getElementById("maplist").style.display = "none";
+		document.getElementById("courseSearch").style.display = "block";
+		document.getElementById("manageCourses").style.display = "block";
+		document.getElementById("parking").style.display = "none";
+		document.getElementById("courseSurvey").style.display = "none";
+	  }
+	  
+	  var clickedSettings = false;
+	  function settings(){
+		  if(!clickedSettings){
+			f5rst();
+			clickedSettings = true;
+		}
+		//url = document.getElementById("frame").contentWindow.location.href;
+		//if(url.includes("https://<?php echo $domain; ?>/dash.php")){
+		if(document.getElementById("settings").classList.contains("nav__link--active")){
+			f5rst();
+			return;
+		}
+		//-----IFRAME CTRL-----
+		//show food iframe
+		document.getElementById("frameC1").style = "display:none";
+		document.getElementById("frameC2").style = "display:none";
+		document.getElementById("frameC3").style = "display:none";
+		document.getElementById("frameC4").style = "display:none";
+		document.getElementById("frameC5").style = "display:block";
+		//document.getElementById("settingsTab").style.display = "block";
+		//iframe reset
+		//f1rst();f3rst();
+		//------SET FRAME ID-----
+		document.getElementsByClassName("f1")[0].id = "frame1";
+		document.getElementsByClassName("f2")[0].id = "frame2";
+		document.getElementsByClassName("f3")[0].id = "frame3";
+		document.getElementsByClassName("f4")[0].id = "frame4";
+		document.getElementsByClassName("f5")[0].id = "frame";
+		//-----MENU CTRL-----
+		document.getElementById("settings").classList.add("nav__link--active");
+		document.getElementById("food").classList.remove("nav__link--active");
+		document.getElementById("dash").classList.remove("nav__link--active");
+		document.getElementById("profile").classList.remove("nav__link--active");
+		document.getElementById("map").classList.remove("nav__link--active");
+		//-----TITLE CYRL-----
+		document.getElementById("mainTitle").innerHTML = "Live Parking";
+		document.title = 'Live Parking';
+		//document.getElementById("qrCode").style.display = "none";
+		
+		//map
+		document.getElementById("navi").style.display = "none";
+		document.getElementById("mapshow").style.display = "none";
+		document.getElementById("maplist").style.display = "none";
+		document.getElementById("courseSearch").style.display = "none";
+		document.getElementById("manageCourses").style.display = "none";
+		document.getElementById("parking").style.display = "block";
+		document.getElementById("courseSurvey").style.display = "none";
+	  }
+	  
+	  var clickedProfile = false;
+	  function profile(){
+		 if(!clickedProfile){
+			f3rst();
+			clickedProfile = true;
+		}
+		//url = document.getElementById("frame").contentWindow.location.href;
+		//if(url.includes("https://<?php echo $domain; ?>/profile.php")){
+		if(document.getElementById("profile").classList.contains("nav__link--active")){
+			f3rst();
+			return;
+		}
+		//go('profile.php');
+		//-----IFRAME CTRL-----
+		//show food iframe
+		document.getElementById("frameC1").style = "display:none";
+		document.getElementById("frameC2").style = "display:none";
+		document.getElementById("frameC3").style = "display:block";
+		document.getElementById("frameC4").style = "display:none";
+		document.getElementById("frameC5").style = "display:none";
+		//document.getElementById("settingsTab").style.display = "none";
+		//set correct iframe id
+		document.getElementsByClassName("f1")[0].id = "frame1";
+		document.getElementsByClassName("f2")[0].id = "frame2";
+		document.getElementsByClassName("f3")[0].id = "frame";
+		document.getElementsByClassName("f4")[0].id = "frame4";
+		document.getElementsByClassName("f5")[0].id = "frame5";
+		//iframe reset
+		//f1rst();f2rst();
+		//-----MENU CTRL-----
+		document.getElementById("profile").classList.add("nav__link--active");
+		document.getElementById("dash").classList.remove("nav__link--active");
+		document.getElementById("food").classList.remove("nav__link--active");
+		document.getElementById("settings").classList.remove("nav__link--active");
+		document.getElementById("map").classList.remove("nav__link--active");
+		document.getElementById("mainTitle").innerHTML = "Tasks";
+		//document.getElementById("scan").classList.remove("nav__link--active");
+		document.title = 'Tasks';
+		//document.getElementById("qrCode").style.display = "none";
+		
+		//map
+		document.getElementById("navi").style.display = "none";
+		document.getElementById("mapshow").style.display = "none";
+		document.getElementById("maplist").style.display = "none";
+		document.getElementById("courseSearch").style.display = "none";
+		document.getElementById("manageCourses").style.display = "none";
+		document.getElementById("parking").style.display = "none";
+		document.getElementById("courseSurvey").style.display = "none";
+	  }
+	  
+	  
+	  
+	  //iFrame Back Button
+	  function iframeBack(){
+		  var url = document.getElementById("frame").contentWindow.location.href;
+		  /*if(url.includes("https://<?php echo $domain; ?>/scan.php") || url.includes("https://<?php echo $domain; ?>/manual.php")){
+			  go('food.php');
+			  document.getElementById("frame").contentWindow.actAni();
+			  document.getElementById("frame").contentWindow.loader();
+		  }else if(url.includes("https://<?php echo $domain; ?>/qr.php")){
+			  go('dash.php');
+			  document.getElementById("frame").contentWindow.actAni();
+			  document.getElementById("frame").contentWindow.loader();
+		  }else{
+			  //window.history.back();
+			  document.getElementById('frame').contentWindow.remoteBack();
+			  document.getElementById("frame").contentWindow.actAni();
+			  document.getElementById("frame").contentWindow.loader();
+		  }*/
+		  document.getElementById('frame').contentWindow.remoteBack();
+		  document.getElementById("frame").contentWindow.actAni();
+		  document.getElementById("frame").contentWindow.loader();
+		  document.getElementById("backButton").style.display = "none";
+	  }
+	//reload
+	function reload(){
+		window.location.replace("landing");
+	}
+	
+	//detect app
+	const queryString = window.location.search;
+	const urlParams = new URLSearchParams(queryString);
+	const appParam = urlParams.get('app');
+	const schemeParam = urlParams.get('scheme');
+	//portrait
+	//updateOrientation();
+	function updateOrientation(){
+				if(appParam == "app"){
+					return;
+				}
+                var displayStr = "Orientation : ";
+ 
+                switch(window.orientation)
+                {
+                    case 0:
+                        displayStr += "Portrait";
+                        document.getElementById("portrait").style = "display:none;";
+                    break;
+ 
+                    case -90:
+                        displayStr += "Landscape (right, screen turned clockwise)";
+                        document.getElementById("portrait").style = "z-index:9999999;";
+                    break;
+ 
+                    case 90:
+                        displayStr += "Landscape (left, screen turned counterclockwise)";
+                        document.getElementById("portrait").style = "z-index:9999999;";
+                    break;
+ 
+                    case 180:
+                        displayStr += "Portrait (upside-down portrait)";
+                        document.getElementById("portrait").style = "z-index:9999999;";
+                    break;
+ 
+                }
+    }
+	
+	/*if ('serviceWorker' in navigator) {
+	    console.log("Will the service worker register?");
+	    navigator.serviceWorker.register('/sw.js')
+	      .then(function(reg){
+	        console.log("Yes, it did.");
+	     }).catch(function(err) {
+	        console.log("No it didn't. This happened:", err)
+	    });
+	 }*/
+	 //sw
+	   let newWorker;
+
+  function showUpdateBar() {
+    let snackbar = document.getElementById('snackbar');
+    snackbar.className = 'show';
+  }
+  
+    function clearCache(){
+	    if (navigator.serviceWorker.controller) {
+	        navigator.serviceWorker.controller.postMessage({
+	            action: 'clearCache'
+	        });
+	    }
+	}
+	
+	// Listen for messages from the service worker
+	navigator.serviceWorker.addEventListener('message', event => {
+	    // Handle messages from the service worker here
+	    if (event.data === 'cacheCleared') {
+	        console.log('Cache has been cleared.');
+	    }
+	});
+
+
+
+  // The click event on the pop up notification
+  document.getElementById('reload').addEventListener('click', function(){
+    newWorker.postMessage({ action: 'skipWaiting' });
+  });
+
+  if ('serviceWorker' in navigator) {
+
+    navigator.serviceWorker.register('/sw.js').then(reg => {
+      reg.addEventListener('updatefound', () => {
+        // A wild service worker has appeared in reg.installing!
+        newWorker = reg.installing;
+
+        newWorker.addEventListener('statechange', () => {
+          // Has network.state changed?
+          switch (newWorker.state) {
+            case 'installed':
+              if (navigator.serviceWorker.controller) {
+                // new update available
+                showUpdateBar();
+              }
+              // No update available
+              break;
+          }
+        });
+      });
+    });
+
+    let refreshing;
+    navigator.serviceWorker.addEventListener('controllerchange', function () {
+      if (refreshing) return;
+      window.location.reload();
+      refreshing = true;
+    });
+  }
+  //sw
+	 
+	
+	//notch solve
+	function notch(){
+		var style=document.createElement('style');
+		style.type='text/css';
+		if(style.styleSheet){
+		    style.styleSheet.cssText='.nav__link {padding-top: 12px;} .f1 { height: 83% !important; } .f2 { height: 83% !important; } .f3 { height: 83% !important; } .f4 { height: 83% !important; } .f5 { height: 83% !important; }';
+		}else{
+		    style.appendChild(document.createTextNode('.nav__link {padding-top: 12px;} .f1 { height: 83% !important; } .f2 { height: 83% !important; } .f3 { height: 83% !important; } .f4 { height: 83% !important; } .f5 { height: 83% !important; }'));
+		}
+		document.getElementsByTagName('head')[0].appendChild(style);
+	}
+	
+	function noNotch(){
+		var style=document.createElement('style');
+		style.type='text/css';
+		if(style.styleSheet){
+		    style.styleSheet.cssText='.nav{height: 45px} .nav__link {padding-top: 0px !important; padding-bottom: 0px; !important; }';
+		}else{
+		    style.appendChild(document.createTextNode('.nav{height: 45px} .nav__link {padding-top: 0px !important; padding-bottom: 0px; !important; }'));
+		}
+		document.getElementsByTagName('head')[0].appendChild(style);
+	}
+	
+	function app(){
+		var style=document.createElement('style');
+		style.type='text/css';
+		if(style.styleSheet){
+		    style.styleSheet.cssText='.nav{height: 70px} .nav__link {padding-top: 0px !important; padding-bottom: 20px; } .f1 { height: 85% !important; } .f2 { height: 85% !important; } .f3 { height: 85% !important; } .f4 { height: 85% !important; } .f5 { height: 85% !important; }';
+		}else{
+		    style.appendChild(document.createTextNode('.nav{height: 70px} .nav__link {padding-top: 0px !important; padding-bottom: 20px;} .f1 { height: 85% !important; } .f2 { height: 85% !important; } .f3 { height: 85% !important; } .f4 { height: 85% !important; } .f5 { height: 85% !important; }'));
+		}
+		document.getElementsByTagName('head')[0].appendChild(style);
+	}
+	
+	/*window.addEventListener('notch-detected', function(e) {
+	  notch();
+	  console.log("notching");
+	});*/
+	
+	
+	
+	if(appParam == 'app'){
+		app();
+	}
+
+	
+	const hasNotch = function () {
+	    var proceed = false;
+	    var div = document.createElement('div');
+	    if (CSS.supports('padding-bottom: env(safe-area-inset-bottom)')) {
+	        div.style.paddingBottom = 'env(safe-area-inset-bottom)';
+	        proceed = true;
+	    } else if (CSS.supports('padding-bottom: constant(safe-area-inset-bottom)')) {
+	        div.style.paddingBottom = 'constant(safe-area-inset-bottom)';
+	        proceed = true;
+	    }
+	    if (proceed) {
+	        document.body.appendChild(div);
+	        let calculatedPadding = parseInt(window.getComputedStyle(div).paddingBottom);
+	        document.body.removeChild(div);
+	        if (calculatedPadding > 0) {
+	            return true;
+	        }
+	    }
+	    return false;
+	};
+	
+	function checkNotch() {
+		if(hasNotch()){
+			notch();
+		}else{
+			noNotch();
+		}
+	}
+	this.interval2 = setInterval(() => this.checkNotch(), 1000);
+	
+	
+	var darkEnabled = false;
+	//dark mode handle
+	function dark(){
+		darkEnabled = true;
+		var style=document.createElement('style');
+		style.type='text/css';
+		if(style.styleSheet){
+		    style.styleSheet.cssText='.nav { background-color: #21252a !important; } .nav__link--active { color: #DA4453 !important; } .nav__link { color: #ffff }';
+		}else{
+		    style.appendChild(document.createTextNode('.nav { background-color: #21252a !important; } .nav__link--active { color: #DA4453 !important; } .nav__link { color: #ffff }'));
+		}
+		document.getElementsByTagName('head')[0].appendChild(style);
+		//set toolbar
+		document.getElementById("toolbar").style = "background:#21252a;position: unset;box-shadow: rgb(0 0 0 / 20%) 0px 3px 3px 0px;z-index: 2147483649;";
+		document.getElementById("toolbarNotch").style = "background:#21252a;padding: env(safe-area-inset-top) env(safe-area-inset-right) 0 env(safe-area-inset-left);";
+		document.body.style.backgroundColor = "#21252a";
+		document.getElementById("settingsTab").style.color = "white";
+		//document.getElementById("frame").contentWindow.postMessage("dark", "*");
+	}
+	function light(){
+		darkEnabled = false;
+		var style=document.createElement('style');
+		style.type='text/css';
+		if(style.styleSheet){
+		    style.styleSheet.cssText='.nav { background-color: #ffffff !important; } .nav__link--active { color: #DA4453 !important; } .nav__link { color: #444444 }';
+		}else{
+		    style.appendChild(document.createTextNode('.nav { background-color: #ffffff !important; } .nav__link--active { color: #DA4453 !important; } .nav__link { color: #444444 }'));
+		}
+		document.getElementsByTagName('head')[0].appendChild(style);
+		document.getElementById("toolbar").style = "background:#003DA5;position: unset;box-shadow: rgb(0 0 0 / 20%) 0px 0px 3px;z-index: 2147483649;";
+		document.getElementById("toolbarNotch").style = "background:#003DA5;padding: env(safe-area-inset-top) env(safe-area-inset-right) 0 env(safe-area-inset-left);";
+		document.body.style.backgroundColor = "transparent";
+		document.getElementById("settingsTab").style.color = "black";
+		//document.getElementById("frame").contentWindow.postMessage("light", "*");
+	}
+	
+	//fix scroll (not perfect)
+	window.addEventListener('scroll', function(){
+	  window.scrollTo(0, 0, 0);
+	}, false);
+	
+	//restore to top
+	function barclick(){
+		document.getElementById('frame').contentWindow.window.scrollTo(0, 0, 0);
+	}
+	//dark reader
+	DarkReader.auto({
+	    brightness: 100,
+	    contrast: 100
+	});
+	
+	//iframeModal
+	
+	function modalFrameGo(url, title){
+		$('#iframeModal').modal("show");
+		//document.getElementById("modalFrame").src = url;
+		document.getElementById("modalFrame").contentWindow.location.replace(url);
+		document.getElementById("iframeModalTitle").innerHTML = title;
+	}
+	
+	function modalFrameGoApp(url, title){
+		url = atob(url);
+		$('#iframeModal').modal("show");
+		//document.getElementById("modalFrame").src = url;
+		document.getElementById("modalFrame").contentWindow.location.replace('https://utils.gohighlander.app/'+url);
+		document.getElementById("iframeModalTitle").innerHTML = title;
+	}
+	
+	function checkScheme(){
+		if(schemeParam){
+			modalFrameGoApp(schemeParam, "")
+		}
+	}
+	
+	window.onload = function() {
+	  checkScheme();
+	}
+	
+	
+	
+	//fireTerms
+        
+	function fireTerms(){
+		if(Swal.isVisible() || $('#iframeModal').is(':visible')){
+			return;
+		}
+		console.log("Firing Term");
+		if(getCookie("terms") != "1"){
+			Swal.fire({
+			  icon: 'info',
+			  title: 'Notice',
+			  text: 'Please read the tab below before using this APP, Please read it before agreeing.',
+			  showDenyButton: true,
+			  confirmButtonText: 'Agree',
+			  denyButtonText: `Don't Agree`,
+			  showCancelButton: true,
+			  cancelButtonText: "Read Terms",
+			  allowOutsideClick: false,
+			}).then((result) => {
+				console.log(result);
+			  if (result.isConfirmed) {
+			    setCookie("terms", "1", 365);
+			  }else if (result.isDenied) {
+			    Swal.fire('If you do not agree to the terms please close and remove this app.', '', 'info')
+			  }else if (result.dismiss == "cancel") {
+			    modalFrameGo('/about.html', 'About this APP');
+			  }
+			})
+		}else{
+			clearInterval(termsCheck);
+		}
+	}
+	fireTerms();
+	
+	var termsCheck = window.setInterval(function(){
+	  fireTerms();
+	}, 1000);
+	
+	
+	function setCookie(cname, cvalue, exdays) {
+	  const d = new Date();
+	  d.setTime(d.getTime() + (exdays*24*60*60*1000));
+	  let expires = "expires="+ d.toUTCString();
+	  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+	}
+	
+	function getCookie(cname) {
+	  let name = cname + "=";
+	  let decodedCookie = decodeURIComponent(document.cookie);
+	  let ca = decodedCookie.split(';');
+	  for(let i = 0; i <ca.length; i++) {
+	    let c = ca[i];
+	    while (c.charAt(0) == ' ') {
+	      c = c.substring(1);
+	    }
+	    if (c.indexOf(name) == 0) {
+	      return c.substring(name.length, c.length);
+	    }
+	  }
+	  return "";
+	}
+	
+	//courseaddchoice
+	function addCourseChoice(){
+		Swal.fire({
+		    title: 'How would you like to add your courses?',
+		    text: "Please choose between the options",
+		    showCancelButton: true,
+		    confirmButtonText: 'Scan QR Code (Beta)',
+		    cancelButtonText: 'Add Manually',
+		    reverseButtons: true
+		}).then((result) => {
+		    if (result.isConfirmed) {
+		        modalFrameGo('https://utils.gohighlander.app/courses/icsgen_scan.html', 'Scan QR Code');
+		    } else if (result.dismiss === Swal.DismissReason.cancel){
+		        modalFrameGo('https://utils.gohighlander.app/courses/term_selectorv2.html', 'Search Course');
+		    }
+		});
+	}
+	
+	/*function showMapCode(code){
+		if(document.getElementsByClassName("f4")[0].src != 'https://utils.gohighlander.app/pwa/'){
+			map();
+			document.getElementsByClassName("f4")[0].contentWindow.showPopByCode(code);
+		}else{
+			map();
+			if(document.getElementsByClassName("f4")[0].src == 'https://utils.gohighlander.app/pwa/'){
+				map();
+				document.getElementsByClassName("f4")[0].contentWindow.showPopByCode(code);
+			};
+		}
+	}*/
+	
+	//solve domain. problem
+	if (location.hostname.endsWith('.')) {
+	  const cleanHost = location.hostname.slice(0, -1);
+	  const newUrl = `${location.protocol}//${cleanHost}${location.port ? ':' + location.port : ''}${location.pathname}${location.search}${location.hash}`;
+	  location.replace(newUrl);
+	}
+	
+	//praying
+	console.log([
+            "%c                   _ooOoo_",
+            "                  o8888888o",
+            "                  88\" . \"88",
+            "                  (| -_- |)",
+            "                  O\\  =  /O",
+            "               ____/`---'\\____",
+            "             .'  \\\\|     |//  `.",
+            "            /  \\\\|||  :  |||//  \\",
+            "           /  _||||| -:- |||||-  \\",
+            "           |   | \\\\\\  -  /// |   |",
+            "           | \\_|  ''\\---/''  |   |",
+            "           \\  .-\\__  `-`  ___/-. /",
+            "         ___`. .'  /--.--\\  `. . __",
+            "      .\"\" '<  `.___\\_<|>_/___.'  >'\"\".",
+            "     | | :  `- \\`.;`\\ _ /`;.`/ - ` : | |",
+            "     \\  \\ `-.   \\_ __\\ /__ _/   .-` /  /",
+            "======`-.____`-.___\\_____/___.-`____.-'======",
+            "                   `=---='",
+            "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        ].join('\n'),'color: #fad144;');
+	</script>
+	<script>
+		//swipe right detection
+document.addEventListener('swiped-right', function(e) {
+			   $('#iframeModal').modal('hide');
+            });
+	</script>
+	<script src="/pwa/swipe.js"></script>
+</body>
+</html>

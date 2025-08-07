@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Parse JSON from Web URL</title>
+    <script>
+      function parseJSON() {
+        const url = "https://cors-anywhere.herokuapp.com/https://registrationssb.ucr.edu/StudentRegistrationSsb/ssb/searchResults/fetchLinkedSections?term=202320&courseReferenceNumber=68750";
+        const xhr = new XMLHttpRequest();
+        xhr.open("GET", url, true);
+        xhr.onload = function () {
+          if (xhr.status === 200) {
+            const data = JSON.parse(xhr.responseText);
+            console.log(data); // log the parsed data object
+          }
+        };
+        xhr.send();
+      }
+    </script>
+  </head>
+  <body>
+    <button onclick="parseJSON()">Parse JSON</button>
+  </body>
+</html>

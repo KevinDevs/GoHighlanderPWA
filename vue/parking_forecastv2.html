@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Parking Lot Forecast</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<!-- Bootstrap CSS -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+	<script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/darkreader@4.9.58/darkreader.min.js"></script>
+	<style type="text/css">
+		.chart-container {
+			height: 300px;
+			margin-top: 30px;
+		}
+		.lot{
+		    margin-top: 5px;
+		}
+		.weekday{
+		    margin-top: 5px;
+		}
+		.prevent-select {
+		  -webkit-user-select: none; /* Safari */
+		  -ms-user-select: none; /* IE 10 and IE 11 */
+		  user-select: none; /* Standard syntax */
+		}
+		html, body {
+		  overscroll-behavior-y: none;
+		}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<br/>
+		<h2 class="text-center">Parking Lot Forecast</h2>
+		<h5 class="text-center">Based On Data Collected Over Past Two Weeks</h5>
+		<br/><br/>
+		<div class="row">
+			
+			<div class="col-md-12 text-center">
+				<h3>Parking Lot</h3>
+				<div class="btn-group-horizontal" role="group">
+					<button type="button" class="btn btn-primary lot" value="Lot 30">Lot 30</button>
+					<button type="button" class="btn btn-primary lot" value="Lot 32">Lot 32</button>
+					<button type="button" class="btn btn-primary lot" value="Lot 50">Lot 50</button>
+					<button type="button" class="btn btn-primary lot" value="Lot 6">Lot 6</button>
+					<button type="button" class="btn btn-primary lot" value="Lot 24">Lot 24</button>
+					<button type="button" class="btn btn-primary lot" value="Lot 26">Lot 26</button>
+					<button type="button" class="btn btn-primary lot" value="Big Springs 1">Big Springs 1</button>
+				</div>
+			</div>
+			<br/><br/><br/>
+			<div class="col-md-12 text-center" style=" margin-top: 10px;">
+				<h3>Week Day</h3>
+				<div class="btn-group-horizontal" role="group">
+					<button type="button" class="btn btn-primary weekday" id="1" value="Monday">Mon</button>
+					<button type="button" class="btn btn-primary weekday" id="2" value="Tuesday">Tues</button>
+					<button type="button" class="btn btn-primary weekday" id="3" value="Wednesday">Wed</button>
+					<button type="button" class="btn btn-primary weekday" id="4" value="Thursday">Thurs</button>
+					<button type="button" class="btn btn-primary weekday" id="5" value="Friday">Fri</button>
+					<button type="button" class="btn btn-primary weekday" id="5" value="Saturday">Sat</button>
+					<button type="button" class="btn btn-primary weekday" id="6" value="Sunday">Sun</button>
+				</div>
+			</div>
+		
+		</div>
+		<div class="chart-container prevent-select">
+			<canvas id="chart"></canvas>
+		</div>
+		<br/>
+	</div>
+	<!-- Bootstrap JS -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+	<!-- Chart.js -->
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	<script type="text/javascript">
+const d = new Date();
+let day = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][d.getDay()];
+$(".weekday[value='" + day + "']").addClass("active");
+
+$(document).ready(function() {
+  var dataURL = "https://ucrparkingapi2.gohighlander.app/output.json";
+  var data;
+
+  // get the JSON data from the URL
+  $.getJSON(dataURL, function(response) {
+    data = response;
+
+    // set the default values for the chart
+    var labels = [];
+    var freeSpaces = [];
+    // draw the chart with default values
+    drawChart(labels, freeSpaces);
+
+    // add click events to the weekday buttons
+    $(".weekday").click(function() {
+      // get the selected weekday and parking lot
+      var weekday = $(this).val();
+      var lot = $(".lot.active").val();
+
+      // update the chart with the data for the selected weekday and parking lot
+      updateChart(weekday, lot);
+    });
+
+    // add click events to the parking lot buttons
+    $(".lot").click(function() {
+      // get the selected weekday and parking lot
+      var weekday = $(".weekday.active").val();
+      var lot = $(this).val();
+
+      // update the chart with the data for the selected weekday and parking lot
+      updateChart(weekday, lot);
+    });
+  });
+
+  // function to draw the chart
+  function drawChart(labels, freeSpaces) {
+    var ctx = document.getElementById("chart").getContext("2d");
+    var chart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Occupancy',
+          data: freeSpaces,
+          backgroundColor: 'rgba(54, 162, 235, 0.2)',
+          borderColor: 'rgba(54, 162, 235, 1)',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            min: 0,
+            max: 100,
+          }
+        }
+      }
+    });
+  }
+
+  // function to update the chart with data for a specific weekday and parking lot
+  function updateChart(weekday, lot) {
+    // find the data for the selected weekday and parking lot
+    var lotData = data[weekday][lot];
+    var labels = [];
+    var freeSpaces = [];
+    var hours = [];
+	
+	for (var hour in lotData) {
+		hours.push(hour);
+	}
+	
+	//sort hours
+			  hours.sort(function(a, b) {
+			    return a - b;
+			  });
+			  
+	
+    // extract the data for each hour and store it in an object
+    for (var i = 0; i < hours.length; i++) {
+      labels.push(hours[i] + ':00');
+      var free = parseInt(lotData[hours[i]].free_spaces);
+      var total = parseInt(lotData[hours[i]].total_spaces);
+      freeSpaces.push(100 - ((free / total) * 100));
+    }
+
+    // update the chart with the new data
+    var ctx = document.getElementById("chart").getContext("2d");
+    var chart = Chart.instances[0];
+    chart.data.labels = labels;
+    chart.data.datasets[0].data = freeSpaces;
+    chart.update();
+
+    // highlight the active buttons
+    $(".weekday").removeClass("active");
+    $(".lot").removeClass("active");
+    $(".weekday[value='" + weekday + "']").addClass("active");
+    $(".lot[value='" + lot + "']").addClass("active");
+  }
+});
+
+//dark reader
+	DarkReader.auto({
+	    brightness: 100,
+	    contrast: 100
+	});
+
+</script>
+	<script>
+		//swipe right detection
+document.addEventListener('swiped-right', function(e) {
+			   window.parent.$('#iframeModal').modal('hide');
+            });
+	</script>
+	<script src="/pwa/swipe.js"></script>
+
+
+

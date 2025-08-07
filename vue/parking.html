@@ -1,0 +1,120 @@
+<head>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+	<script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<style>
+		.card-header {
+		    background-color: rgb(0, 61, 165);
+		    color: white;
+		}
+		.progress-bar {
+		    background-color: rgb(0, 61, 165);
+		}
+		.row-pad {
+		    padding-bottom: 25px;
+		}
+		.parent { display: -ms-flex; display: -webkit-flex; display: flex; }
+		.parent>div { flex:1; }
+		
+		.row {
+		    margin-right: unset !important;
+		    margin-left: unset !important;
+		}
+		
+		.container, .container-fluid, .container-lg, .container-md, .container-sm, .container-xl, .container-xxl {
+		    padding-right: unset !important;
+		    padding-left: unset !important;
+		}
+	</style>
+</head>
+<body>
+	<br/>
+	<div id="lots" class="container-fluid row">
+		
+	</div>
+
+	<script>
+		//storing locally
+		const UCRLOTJSON = '{"lots": { "lot_30": { "getdatafrom": "https:\/\/streetsoncloud.com\/parking\/rest\/occupancy\/id\/547" }, "lot_32": { "getdatafrom": "https:\/\/streetsoncloud.com\/parking\/rest\/occupancy\/id\/548" }, "lot_50": { "getdatafrom": "https:\/\/streetsoncloud.com\/parking\/rest\/occupancy\/id\/495" }, "lot_6": { "getdatafrom": "https:\/\/streetsoncloud.com\/parking\/rest\/occupancy\/id\/545" }, "lot_24": { "getdatafrom": "https:\/\/streetsoncloud.com\/parking\/rest\/occupancy\/id\/544" }, "lot_26": { "getdatafrom": "https:\/\/streetsoncloud.com\/parking\/rest\/occupancy\/id\/546" }, "big_springs": { "getdatafrom": "https:\/\/streetsoncloud.com\/parking\/rest\/occupancy\/id\/543" } }}';
+		const UCRParkingLotsData = JSON.parse(UCRLOTJSON);
+		const UCRLots = UCRParkingLotsData.lots;
+		var lotURL = [];
+		var lotPermitJSON = '{ "lots": { "Big Spring Parking Structure 1": { "permit": "Housing", "description": "Also known as Lot 21", "color": "#89c3c6" }, "Lot 6-": { "permit": "<font style=\'color: #5c99c9\'>Blue</font>", "description": "<font style=\'color: #d65a59\'>Red</font> or <font style=\'color: #5c99c9\'>Blue</font> permit holders can park up to <b>two hours, one time per day.</b> <br/><b><font style=\'color: #f2b946\'>Gold</font> permit valid after 6 PM, all day on weekends. (excludes Pay-By-Space and Reserved spaces.)</b> <br/>Could be outdated check UCR Website for precise information.", "color": "linear-gradient(110deg, #5c99c9 30%, #d65a59 70%, #f2b946 5%)" }, "Lot 24-": { "permit": "<font style=\'color: #5c99c9\'>Blue</font>", "description": "<font style=\'color: #d65a59\'>Red</font> or <font style=\'color: #5c99c9\'>Blue</font> permit holders can park up to <b>two hours, one time per day.</b> <br/><b><font style=\'color: #f2b946\'>Gold</font> permit valid after 6 PM, all day on weekends. (excludes Pay-By-Space and Reserved spaces.)</b> <br/> Could be outdated check UCR Website for precise information.", "color": "linear-gradient(110deg, #5c99c9 30%, #d65a59 70%, #f2b946 5%)" }, "Lot 26-": { "permit": "<font style=\'color: #f2b946\'>Gold</font>", "description": "At UCR Baseball Complex", "color": "#f2b946" }, "Lot 30-": { "permit": "<font style=\'color: #f2b946\'>Gold</font>", "description": "Biggest UCR Student Parking Lot", "color": "#f2b946" }, "Lot 32-": { "permit": "<font style=\'color: #f2b946\'>Gold</font>", "description": "Alternative to Lot 30", "color": "#f2b946" }, "Lot 50": { "permit": "<font style=\'color: #f2b946\'>Gold</font>", "description": "At International Village", "color": "#f2b946" } } }';
+		
+		const PermitData = JSON.parse(lotPermitJSON);
+		const PermitLots = PermitData.lots;
+			
+		//read json and add in array
+		function refreshArr(){
+			document.getElementById("lots").innerHTML = "";
+			jQuery.each(UCRLots, function() {
+				lotURL.push(this.getdatafrom);
+			});	
+		}
+		
+		refreshArr();
+		
+		var intervalId = window.setInterval(function(){
+		  refreshArr();
+		  addLotData();
+		}, 60000);
+		
+		//traverse array and add data
+		function getLotData(){
+			if(lotURL.length != 0){
+				addLotData(lotURL[0]);
+				lotURL.shift();
+			}
+		}
+		
+		
+		
+		function addLotData(){
+			
+			if(lotURL.length != 0){
+				var url = lotURL[0];
+				lotURL.shift();
+				//credit https://www.yogihosting.com/jquery-jsonp-example/
+				$.ajax({
+				    url: url,
+				    dataType: "jsonp", // jsonp
+				    type: "GET",
+				    success: function (result) {
+					    var permit = PermitLots[result.results[0].location_name].permit;
+					    var description = PermitLots[result.results[0].location_name].description;
+					    var color = PermitLots[result.results[0].location_name].color;
+					    document.getElementById("lots").innerHTML += `
+								<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 row-pad parent">
+									<div class="card">
+										<h5 class="card-header" style="background:`+color+`">
+											`+result.results[0].location_name+`
+										</h5>
+										<div class="card-body">
+											<p class="card-text">
+												Location: `+result.results[0].location_address+`<br/>
+												Permit: `+permit+`<br/>
+												Details: `+description+`
+											</p>
+										</div>
+										<div class="card-footer">
+												Spots Left: `+result.results[0].data[0].free_spaces+`/`+result.results[0].data[0].total_spaces+`<br/>
+												<center>Occupancy: `+Math.round(100-result.results[0].data[0].free_spaces/result.results[0].data[0].total_spaces*100)+`%</center>
+												<div class="progress">
+												  <div class="progress-bar" role="progressbar" style="width: `+Math.round(100-result.results[0].data[0].free_spaces/result.results[0].data[0].total_spaces*100)+`%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+												</div>
+										</div>
+									</div>
+								</div><br/>`;
+						addLotData();
+				    },
+				    error: function (xhr, status, error) {
+				        console.log("Result: " + status + " " + error + " " + xhr.status + " " + xhr.statusText)
+				    }
+				});
+			}
+		}
+		
+		addLotData();
+		
+	</script>
+</body>

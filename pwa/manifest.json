@@ -1,0 +1,23 @@
+{
+  "name": "GoHighlander Lite",
+  "short_name": "GoHighlander Lite",
+  "theme_color": "#FFFFFF",
+  "background_color": "#FFFFFF",
+  "display": "standalone",
+  "Scope": "./",
+  "start_url": "/pwa/",
+  "orientation": "portrait",
+  "icons": [
+	{
+      "src": "/images/192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/images/512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "splash_pages": null
+}

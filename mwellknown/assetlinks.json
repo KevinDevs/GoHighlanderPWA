@@ -1,0 +1,6 @@
+[{
+        "relation": ["delegate_permission/common.handle_all_urls"],
+        "target" : { "namespace": "android_app", "package_name": "app.gohighlander.m.twa",
+                     "sha256_cert_fingerprints": ["F8:A1:8D:23:03:39:0A:C9:7A:21:E8:82:21:AA:B3:CB:40:8A:03:A3:A1:5C:DA:A9:FB:9D:28:32:D5:8C:A6:3F"] }
+      }
+]
